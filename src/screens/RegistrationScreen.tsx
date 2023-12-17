@@ -41,6 +41,7 @@ export const RegistrationScreen = ({navigation}: any) => {
 
   const [signUp, {loading, error, data}] = useMutation(SIGN_UP);
   const [isError, setError] = useState('');
+  const [isSuccess, setSuccess] = useState(true);
 
   const onSubmit = async (FormData: FormData) => {
     try {
@@ -62,119 +63,148 @@ export const RegistrationScreen = ({navigation}: any) => {
       if (response.data.userSignUp.token) {
         storage.set('userToken', response.data.userSignUp.token);
         console.log(storage.getString('userToken'));
+        setSuccess(false);
       } else if (response.data.userSignUp.problem) {
         console.log(response.data.userSignUp.problem.message);
       }
     } catch (e: any) {
       console.log('Authentication error: ' + e);
       setError('Authentication error: ' + e.message);
+      setSuccess(true);
     }
   };
 
   const [isShowPassword, setShowPassword] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.title}>Join us</Text>
-        <Text style={styles.subtitle}>
-          You will be able to fully communicate
-        </Text>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your e-mail"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
-          )}
-          name="email"
-        />
-        {errors.email && <Text style={styles.error}>This is required.</Text>}
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <View style={styles.input__wrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry={isShowPassword}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!isShowPassword)}>
-                <Image
-                  source={require('../assets/heroicons-mini-eye.png')}
-                  style={styles.icon}></Image>
-              </TouchableOpacity>
-            </View>
-          )}
-          name="password"
-        />
-        {errors.password && <Text style={styles.error}>This is required.</Text>}
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <View style={styles.input__wrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm your password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry={isShowPassword}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!isShowPassword)}>
-                <Image
-                  source={require('../assets/heroicons-mini-eye.png')}
-                  style={styles.icon}></Image>
-              </TouchableOpacity>
-            </View>
-          )}
-          name="confirmPassword"
-        />
-        {errors.confirmPassword && (
-          <Text style={styles.error}>This is required.</Text>
-        )}
-        <Text style={styles.error}>{isError}</Text>
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Login');
-            }}>
-            <Text style={styles.login}>
-              Already have an account?
-              <Text style={styles.login__text}> Log in</Text>
+    <>
+      {isSuccess ? (
+        <View style={styles.container}>
+          <View>
+            <Text style={styles.title}>Join us</Text>
+            <Text style={styles.subtitle}>
+              You will be able to fully communicate
             </Text>
-          </TouchableOpacity>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your e-mail"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="email"
+            />
+            {errors.email && (
+              <Text style={styles.error}>This is required.</Text>
+            )}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <View style={styles.input__wrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    secureTextEntry={isShowPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!isShowPassword)}>
+                    <Image
+                      source={require('../assets/heroicons-mini-eye.png')}
+                      style={styles.icon}></Image>
+                  </TouchableOpacity>
+                </View>
+              )}
+              name="password"
+            />
+            {errors.password && (
+              <Text style={styles.error}>This is required.</Text>
+            )}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <View style={styles.input__wrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Confirm your password"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    secureTextEntry={isShowPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!isShowPassword)}>
+                    <Image
+                      source={require('../assets/heroicons-mini-eye.png')}
+                      style={styles.icon}></Image>
+                  </TouchableOpacity>
+                </View>
+              )}
+              name="confirmPassword"
+            />
+            {errors.confirmPassword && (
+              <Text style={styles.error}>This is required.</Text>
+            )}
+            <Text style={styles.error}>{isError}</Text>
+            <View style={styles.bottomContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Login');
+                }}>
+                <Text style={styles.login}>
+                  Already have an account?
+                  <Text style={styles.login__text}> Log in</Text>
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.continue}>
+                <Text
+                  onPress={handleSubmit(onSubmit)}
+                  style={styles.continue__text}>
+                  continue
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.container__success}>
+          <Image source={require('../assets/success.png')}></Image>
+          <View style={styles.text__success}>
+            <Image
+              source={require('../assets/outline-check-circle.png')}
+              style={styles.image__success}></Image>
+            <Text>You have been registered</Text>
+          </View>
           <TouchableOpacity style={styles.continue}>
             <Text
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => {
+                navigation.navigate('Login');
+              }}
               style={styles.continue__text}>
               continue
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </View>
+      )}
+    </>
   );
 };
 
@@ -247,5 +277,24 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     top: -50,
     right: 0,
+  },
+  container__success: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    backgroundColor: `#FFF`,
+  },
+  text__success: {
+    alignItems: 'center',
+    position: 'relative',
+    marginTop: 26,
+    marginBottom: 52,
+  },
+  image__success: {
+    position: 'absolute',
+    left: -25,
+    width: 18,
+    height: 18,
   },
 });
