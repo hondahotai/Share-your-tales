@@ -13,6 +13,7 @@ import React, {useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {SIGN_UP} from '../apollo/mutations/authMutations.ts';
 import {storage} from '../utils/storage.ts';
+import {Success} from '../components/modules/Success/Success.tsx';
 
 type FormData = {
   email: string;
@@ -185,24 +186,7 @@ export const RegistrationScreen = ({navigation}: any) => {
           </View>
         </View>
       ) : (
-        <View style={styles.container__success}>
-          <Image source={require('../assets/success.png')}></Image>
-          <View style={styles.text__success}>
-            <Image
-              source={require('../assets/outline-check-circle.png')}
-              style={styles.image__success}></Image>
-            <Text>You have been registered</Text>
-          </View>
-          <TouchableOpacity style={styles.continue}>
-            <Text
-              onPress={() => {
-                navigation.navigate('Login');
-              }}
-              style={styles.continue__text}>
-              continue
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Success />
       )}
     </>
   );
