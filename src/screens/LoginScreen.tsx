@@ -8,12 +8,18 @@ import {
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
 import React, {useState} from 'react';
-import {storage} from "../utils/storage.ts";
+import {storage} from '../utils/storage.ts';
+import {useMutation} from '@apollo/client';
+import {SIGN_IN} from '../apollo/mutations/authMutations.ts';
 
 type FormDataLogin = {
   email: string;
   password: string;
-  confirmPassword: string;
+};
+
+type SignInRequest = {
+  email: string;
+  password: string;
 };
 
 export const LoginScreen = ({navigation}: any) => {
@@ -25,17 +31,40 @@ export const LoginScreen = ({navigation}: any) => {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: '',
     },
   });
 
+  const [signIn, {loading, error, data}] = useMutation(SIGN_IN);
 
   const [isShowPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data: any) => {
-    storage.set('user.name', 'Marc')
-    console.log(data);
-  }
+  const onSubmit = async (formData: SignInRequest) => {
+    try {
+      console.log('Sending', {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const response = await signIn({
+        variables: {
+          input: {
+            email: formData.email,
+            password: formData.password,
+          },
+        },
+      });
+
+      if (response.data.userSignIn.token) {
+        storage.set('userToken', response.data.userSignIn.token);
+        console.log(storage.getString('userToken'));
+        navigation.navigate('Main');
+      } else if (response.data.userSignIn.problem) {
+        console.log(response.data.userSignIn.problem.message);
+      }
+    } catch (e: any) {
+      console.log('Authentication error: ' + e);
+    }
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -71,24 +100,25 @@ export const LoginScreen = ({navigation}: any) => {
           render={({field: {onChange, onBlur, value}}) => (
             <View style={styles.input__wrapper}>
               <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  secureTextEntry={isShowPassword}
-
+                style={styles.input}
+                placeholder="Enter your password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={isShowPassword}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!isShowPassword)}
-              >
-                <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
-                ></Image>
+              <TouchableOpacity
+                onPress={() => setShowPassword(!isShowPassword)}>
+                <Image
+                  source={require('../assets/heroicons-mini-eye.png')}
+                  style={styles.icon}></Image>
               </TouchableOpacity>
             </View>
           )}
           name="password"
         />
         {errors.password && <Text style={styles.error}>This is required.</Text>}
+        <Text style={styles.error}>{data?.userSignIn?.problem?.message}</Text>
 
         <View style={styles.bottomContainer}>
           <TouchableOpacity
@@ -167,7 +197,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingRight: 40,
     paddingLeft: 10,
-
   },
   bottomContainer: {
     flexGrow: 1,
@@ -178,12 +207,12 @@ const styles = StyleSheet.create({
     color: `rgba(194, 83, 76, 1)`,
   },
   input__wrapper: {
-    position: "relative"
+    position: 'relative',
   },
   icon: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 1000,
     top: -50,
-    right: 0
-  }
+    right: 0,
+  },
 });
