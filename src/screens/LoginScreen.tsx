@@ -1,4 +1,5 @@
 import {
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -6,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
-import React from 'react';
+import React, {useState} from 'react';
 
 type FormDataLogin = {
   email: string;
@@ -26,6 +27,8 @@ export const LoginScreen = ({navigation}: any) => {
       confirmPassword: '',
     },
   });
+
+  const [isShowPassword, setShowPassoword] = useState(false);
   const onSubmit = (data: any) => console.log(data);
   return (
     <View style={styles.container}>
@@ -60,13 +63,22 @@ export const LoginScreen = ({navigation}: any) => {
             required: true,
           }}
           render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
+            <View style={styles.input__wrapper}>
+              <TextInput
+                  style={styles.input}
+                  placeholder="Enter your password"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  secureTextEntry={isShowPassword}
+
+              />
+              <TouchableOpacity onPress={() => setShowPassoword(!isShowPassword)}
+              >
+                <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
+                ></Image>
+              </TouchableOpacity>
+            </View>
           )}
           name="password"
         />
@@ -147,6 +159,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
     marginBottom: 20,
+    paddingRight: 40,
+    paddingLeft: 10,
+
   },
   bottomContainer: {
     flexGrow: 1,
@@ -156,4 +171,13 @@ const styles = StyleSheet.create({
   error: {
     color: `rgba(194, 83, 76, 1)`,
   },
+  input__wrapper: {
+    position: "relative"
+  },
+  icon: {
+    position: "absolute",
+    zIndex: 1000,
+    top: -50,
+    right: 0
+  }
 });
