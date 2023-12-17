@@ -30,7 +30,7 @@ export const RegistrationScreen = ({navigation}: any) => {
   });
   const onSubmit = (data: any) => console.log(data);
 
-  const [isShowPassword, setShowPassoword] = useState(false);
+  const [isShowPassword, setShowPassword] = useState(false);
 
 
   return (
@@ -75,7 +75,7 @@ export const RegistrationScreen = ({navigation}: any) => {
                     value={value}
                     secureTextEntry={isShowPassword}
                 />
-                <TouchableOpacity onPress={() => setShowPassoword(!isShowPassword)}
+                <TouchableOpacity onPress={() => setShowPassword(!isShowPassword)}
                 >
                   <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
                   ></Image>
@@ -102,7 +102,7 @@ export const RegistrationScreen = ({navigation}: any) => {
                   value={value}
                   secureTextEntry={isShowPassword}
               />
-                <TouchableOpacity onPress={() => setShowPassoword(!isShowPassword)}
+                <TouchableOpacity onPress={() => setShowPassword(!isShowPassword)}
                 >
                   <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
                   ></Image>

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
 import React, {useState} from 'react';
+import {storage} from "../utils/storage.ts";
 
 type FormDataLogin = {
   email: string;
@@ -28,8 +29,13 @@ export const LoginScreen = ({navigation}: any) => {
     },
   });
 
-  const [isShowPassword, setShowPassoword] = useState(false);
-  const onSubmit = (data: any) => console.log(data);
+
+  const [isShowPassword, setShowPassword] = useState(false);
+
+  const onSubmit = (data: any) => {
+    storage.set('user.name', 'Marc')
+    console.log(data);
+  }
   return (
     <View style={styles.container}>
       <View>
@@ -73,7 +79,7 @@ export const LoginScreen = ({navigation}: any) => {
                   secureTextEntry={isShowPassword}
 
               />
-              <TouchableOpacity onPress={() => setShowPassoword(!isShowPassword)}
+              <TouchableOpacity onPress={() => setShowPassword(!isShowPassword)}
               >
                 <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
                 ></Image>
