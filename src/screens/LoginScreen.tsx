@@ -37,6 +37,7 @@ export const LoginScreen = ({navigation}: any) => {
   const [signIn, {loading, error, data}] = useMutation(SIGN_IN);
 
   const [isShowPassword, setShowPassword] = useState(false);
+  const [isError, setError] = useState('');
 
   const onSubmit = async (formData: SignInRequest) => {
     try {
@@ -63,6 +64,7 @@ export const LoginScreen = ({navigation}: any) => {
       }
     } catch (e: any) {
       console.log('Authentication error: ' + e);
+      setError('Authentication error: ' + e.message);
     }
   };
   return (
@@ -118,7 +120,7 @@ export const LoginScreen = ({navigation}: any) => {
           name="password"
         />
         {errors.password && <Text style={styles.error}>This is required.</Text>}
-        <Text style={styles.error}>{data?.userSignIn?.problem?.message}</Text>
+        <Text style={styles.error}>{isError}</Text>
 
         <View style={styles.bottomContainer}>
           <TouchableOpacity

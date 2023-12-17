@@ -13,3 +13,17 @@ export const SIGN_IN = gql`
     }
   }
 `;
+
+export const SIGN_UP = gql`
+  mutation signUp($input: SignUpRequest!) {
+    userSignUp(input: $input) {
+      problem {
+        message
+      }
+      token
+      user {
+        id
+      }
+    }
+  }
+`;

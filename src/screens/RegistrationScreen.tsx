@@ -1,5 +1,6 @@
 import {
-  Button, Image,
+  Button,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,11 +10,20 @@ import {
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
 import React, {useState} from 'react';
+import {useMutation} from '@apollo/client';
+import {SIGN_UP} from '../apollo/mutations/authMutations.ts';
+import {storage} from '../utils/storage.ts';
 
 type FormData = {
   email: string;
   password: string;
   confirmPassword: string;
+};
+
+type SignUpRequest = {
+  email: string;
+  password: string;
+  passwordConfirm: string;
 };
 
 export const RegistrationScreen = ({navigation}: any) => {
@@ -28,10 +38,40 @@ export const RegistrationScreen = ({navigation}: any) => {
       confirmPassword: '',
     },
   });
-  const onSubmit = (data: any) => console.log(data);
+
+  const [signUp, {loading, error, data}] = useMutation(SIGN_UP);
+  const [isError, setError] = useState('');
+
+  const onSubmit = async (FormData: FormData) => {
+    try {
+      console.log('Sending', {
+        email: FormData.email,
+        password: FormData.password,
+      });
+
+      const response = await signUp({
+        variables: {
+          input: {
+            email: FormData.email,
+            password: FormData.password,
+            passwordConfirm: FormData.confirmPassword,
+          },
+        },
+      });
+
+      if (response.data.userSignUp.token) {
+        storage.set('userToken', response.data.userSignUp.token);
+        console.log(storage.getString('userToken'));
+      } else if (response.data.userSignUp.problem) {
+        console.log(response.data.userSignUp.problem.message);
+      }
+    } catch (e: any) {
+      console.log('Authentication error: ' + e);
+      setError('Authentication error: ' + e.message);
+    }
+  };
 
   const [isShowPassword, setShowPassword] = useState(false);
-
 
   return (
     <View style={styles.container}>
@@ -66,23 +106,22 @@ export const RegistrationScreen = ({navigation}: any) => {
             required: true,
           }}
           render={({field: {onChange, onBlur, value}}) => (
-              <View style={styles.input__wrapper}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter your password"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    secureTextEntry={isShowPassword}
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!isShowPassword)}
-                >
-                  <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
-                  ></Image>
-                </TouchableOpacity>
-              </View>
-
-
+            <View style={styles.input__wrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={isShowPassword}
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!isShowPassword)}>
+                <Image
+                  source={require('../assets/heroicons-mini-eye.png')}
+                  style={styles.icon}></Image>
+              </TouchableOpacity>
+            </View>
           )}
           name="password"
         />
@@ -93,29 +132,29 @@ export const RegistrationScreen = ({navigation}: any) => {
             required: true,
           }}
           render={({field: {onChange, onBlur, value}}) => (
-              <View style={styles.input__wrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirm your password"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  secureTextEntry={isShowPassword}
+            <View style={styles.input__wrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm your password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={isShowPassword}
               />
-                <TouchableOpacity onPress={() => setShowPassword(!isShowPassword)}
-                >
-                  <Image source={require('../assets/heroicons-mini-eye.png')} style={styles.icon}
-                  ></Image>
-                </TouchableOpacity>
-              </View>
-
+              <TouchableOpacity
+                onPress={() => setShowPassword(!isShowPassword)}>
+                <Image
+                  source={require('../assets/heroicons-mini-eye.png')}
+                  style={styles.icon}></Image>
+              </TouchableOpacity>
+            </View>
           )}
           name="confirmPassword"
         />
         {errors.confirmPassword && (
           <Text style={styles.error}>This is required.</Text>
         )}
-
+        <Text style={styles.error}>{isError}</Text>
         <View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={() => {
@@ -201,12 +240,12 @@ const styles = StyleSheet.create({
     color: `rgba(194, 83, 76, 1)`,
   },
   input__wrapper: {
-    position: "relative"
+    position: 'relative',
   },
   icon: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 1000,
     top: -50,
-    right: 0
-  }
+    right: 0,
+  },
 });
