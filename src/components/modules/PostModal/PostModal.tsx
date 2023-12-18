@@ -44,9 +44,11 @@ export const PostModal = ({post, visible, onClose, share}: any) => {
     <Modal animationType="slide" visible={visible} onRequestClose={onClose}>
       <View style={styles.container}>
         <View style={styles.heading}>
-          <Image
-            style={styles.close}
-            source={require('../../../assets/ArrowLeftButtonBack.png')}></Image>
+          <TouchableOpacity onPress={onClose} style={styles.close__wrap}>
+            <Image
+              style={styles.close}
+              source={require('../../../assets/ArrowLeftButtonBack.png')}></Image>
+          </TouchableOpacity>
           <Text style={styles.title}>{data?.post?.title}</Text>
         </View>
         <Text style={styles.date}>
@@ -156,6 +158,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 21,
     left: 16,
+    zIndex: 200,
+  },
+  close__wrap: {
+    position: 'relative',
+    zIndex: 100,
   },
   date: {
     color: '#9B9B9B',
