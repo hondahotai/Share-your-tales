@@ -1,4 +1,5 @@
 import {
+  Animated,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,7 @@ import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
 import {useQuery} from '@apollo/client';
 import {POSTS} from '../apollo/queries/postsQueries.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
+import {ToggleMenu} from '../components/modules/toggleMenu/toggleMenu.tsx';
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
@@ -29,19 +31,40 @@ export const MainScreen = () => {
     data: dataUser,
   } = useQuery(USER_ME);
 
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const sidebarPosition = useState(new Animated.Value(-288))[0];
+  const toggleSidebar = () => {
+    if (sidebarVisible) {
+      Animated.timing(sidebarPosition, {
+        toValue: -288,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(sidebarPosition, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }
+    setSidebarVisible(!sidebarVisible);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
         <Text style={styles.heading__text}>{`Hello ${
-          dataUser.userMe?.firstName ? dataUser.userMe?.firstName : ``
+          dataUser?.userMe?.firstName ? dataUser.userMe?.firstName : ``
         }!`}</Text>
-        <Image
-          style={styles.heading__img}
-          source={
-            dataUser.userMe.avatarUrl
-              ? {uri: dataUser.userMe.avatarUrl}
-              : require('../assets/StateEmptyUserSmall.png')
-          }></Image>
+        <TouchableOpacity onPress={toggleSidebar}>
+          <Image
+            style={styles.heading__img}
+            source={
+              dataUser?.userMe.avatarUrl
+                ? {uri: dataUser.userMe.avatarUrl}
+                : require('../assets/StateEmptyUserSmall.png')
+            }></Image>
+        </TouchableOpacity>
       </View>
       <View style={styles.tabs}>
         <TouchableOpacity
@@ -84,6 +107,17 @@ export const MainScreen = () => {
           <Text style={styles.navigation__text}>My posts</Text>
         </TouchableOpacity>
       </View>
+      <Animated.View
+        style={{
+          ...styles.sidebar,
+          transform: [{translateX: sidebarPosition}],
+        }}>
+        <ToggleMenu
+          userName={dataUser?.userMe?.firstName}
+          userLastName={dataUser?.userMe?.lastName}
+          userAvatar={dataUser?.userMe?.avatarUrl}
+        />
+      </Animated.View>
     </View>
   );
 };
@@ -150,5 +184,13 @@ const styles = StyleSheet.create({
   navigation__text: {
     textAlign: 'center',
     alignSelf: 'center',
+  },
+  sidebar: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: 288,
+    backgroundColor: '#fff',
   },
 });

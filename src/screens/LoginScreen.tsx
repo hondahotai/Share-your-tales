@@ -26,6 +26,7 @@ export const LoginScreen = ({navigation}: any) => {
   const {
     control,
     handleSubmit,
+    reset,
     formState: {errors},
   } = useForm<FormDataLogin>({
     defaultValues: {
@@ -59,6 +60,7 @@ export const LoginScreen = ({navigation}: any) => {
         storage.set('userToken', response.data.userSignIn.token);
         console.log(storage.getString('userToken'));
         navigation.navigate('Main');
+        reset();
       } else if (response.data.userSignIn.problem) {
         console.log(response.data.userSignIn.problem.message);
       }
