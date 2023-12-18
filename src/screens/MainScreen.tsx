@@ -1,5 +1,6 @@
 import {
   Animated,
+  Dimensions,
   Image,
   ScrollView,
   Share,
@@ -35,19 +36,35 @@ export const MainScreen = () => {
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const sidebarPosition = useState(new Animated.Value(-288))[0];
+  const [overlayOpacity] = useState(new Animated.Value(0));
+
   const toggleSidebar = () => {
     if (sidebarVisible) {
-      Animated.timing(sidebarPosition, {
-        toValue: -288,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
+      Animated.parallel([
+        Animated.timing(sidebarPosition, {
+          toValue: -288,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 1,
+          useNativeDriver: true,
+        }),
+      ]).start();
     } else {
-      Animated.timing(sidebarPosition, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
+      Animated.parallel([
+        Animated.timing(sidebarPosition, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: Dimensions.get('window').width - 288,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
     }
     setSidebarVisible(!sidebarVisible);
   };
@@ -143,6 +160,15 @@ export const MainScreen = () => {
       </View>
       <Animated.View
         style={{
+          ...styles.overlay,
+          opacity: overlayOpacity,
+
+          ...(sidebarVisible && {zIndex: 1}),
+        }}
+        onTouchEnd={toggleSidebar}
+      />
+      <Animated.View
+        style={{
           ...styles.sidebar,
           transform: [{translateX: sidebarPosition}],
         }}>
@@ -165,6 +191,7 @@ export const MainScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFF',
   },
   heading: {
     flexDirection: 'row',
@@ -232,5 +259,15 @@ const styles = StyleSheet.create({
     left: 0,
     width: 288,
     backgroundColor: '#fff',
+    zIndex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: -1,
   },
 });

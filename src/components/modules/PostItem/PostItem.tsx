@@ -64,7 +64,7 @@ export const PostItem = ({post, onPress, share}: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#e5e5e5',
+    backgroundColor: '#F4F5F4',
     paddingHorizontal: 20,
     paddingTop: 24,
     paddingBottom: 32,
