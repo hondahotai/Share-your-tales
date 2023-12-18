@@ -10,6 +10,7 @@ import React, {useState} from 'react';
 import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
 import {useQuery} from '@apollo/client';
 import {POSTS} from '../apollo/queries/postsQueries.ts';
+import {USER_ME} from '../apollo/queries/userQueries.ts';
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
@@ -17,19 +18,30 @@ export const MainScreen = () => {
     variables: {
       input: {
         afterCursor: '',
-        limit: 10,
-        type: 'TOP',
+        limit: isTabActive ? 8 : 10,
+        type: isTabActive ? 'NEW' : 'TOP',
       },
     },
   });
+  const {
+    loading: loadingUser,
+    error: errorUser,
+    data: dataUser,
+  } = useQuery(USER_ME);
 
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
-        <Text style={styles.heading__text}>{`Hello John!`}</Text>
+        <Text style={styles.heading__text}>{`Hello ${
+          dataUser.userMe?.firstName ? dataUser.userMe?.firstName : ``
+        }!`}</Text>
         <Image
           style={styles.heading__img}
-          source={require('../assets/img/avatarTesting.png')}></Image>
+          source={
+            dataUser.userMe.avatarUrl
+              ? {uri: dataUser.userMe.avatarUrl}
+              : require('../assets/StateEmptyUserSmall.png')
+          }></Image>
       </View>
       <View style={styles.tabs}>
         <TouchableOpacity

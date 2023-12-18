@@ -19,7 +19,10 @@ export const PostItem = ({post}: any) => {
   const handleGetUserName = () => {
     const userName = post.author.firstName;
     const lastName = post.author.lastName;
-    return `${userName} ${lastName.at(0)}.`;
+    if (!userName) {
+      return `Anonymous`;
+    }
+    return `${userName} ${lastName?.at(0)}.`;
   };
 
   const onShare = async () => {
@@ -51,7 +54,11 @@ export const PostItem = ({post}: any) => {
         <View style={styles.user}>
           <Image
             style={styles.user__img}
-            source={{uri: post.author.avatarUrl}}></Image>
+            source={
+              post.author.avatarUrl
+                ? {uri: post.author.avatarUrl}
+                : require('../../../assets/StateEmptyUserSmall.png')
+            }></Image>
           <Text style={styles.user__name}>{handleGetUserName()}</Text>
         </View>
         <View style={styles.info__btns}>
@@ -71,7 +78,7 @@ export const PostItem = ({post}: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#dcdcdc',
+    backgroundColor: '#e5e5e5',
     paddingHorizontal: 20,
     paddingTop: 24,
     paddingBottom: 32,
