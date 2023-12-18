@@ -2,6 +2,7 @@ import {
   Animated,
   Image,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,6 +14,7 @@ import {useQuery} from '@apollo/client';
 import {POSTS} from '../apollo/queries/postsQueries.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
 import {ToggleMenu} from '../components/modules/toggleMenu/toggleMenu.tsx';
+import {PostModal} from '../components/modules/PostModal/PostModal.tsx';
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
@@ -50,6 +52,33 @@ export const MainScreen = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: 'Поделится постом',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openPostModal = (post: any) => {
+    setSelectedPost(post);
+    setModalVisible(true);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
@@ -84,7 +113,12 @@ export const MainScreen = () => {
       </View>
       <ScrollView>
         {data?.posts?.data.map((post: any, id: number) => (
-          <PostItem key={id} post={post} />
+          <PostItem
+            key={id}
+            post={post}
+            onPress={() => openPostModal(post)}
+            share={onShare}
+          />
         ))}
       </ScrollView>
       <View style={styles.navigation}>
@@ -118,6 +152,12 @@ export const MainScreen = () => {
           userAvatar={dataUser?.userMe?.avatarUrl}
         />
       </Animated.View>
+      <PostModal
+        post={selectedPost}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        share={onShare}
+      />
     </View>
   );
 };

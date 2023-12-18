@@ -6,14 +6,17 @@ import {
   View,
   Share,
 } from 'react-native';
+import {storage} from '../../../utils/storage.ts';
 
-export const PostItem = ({post}: any) => {
+export const PostItem = ({post, onPress, share}: any) => {
   const handleGetDate = () => {
     let date = new Date(post.createdAt);
 
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth()).padStart(2, '0');
     const year = String(date.getFullYear().toString().slice(-2));
+
+    storage.set(`${post.id}`, `${day}.${month}.${year}`);
     return `${day}.${month}.${year}`;
   };
   const handleGetUserName = () => {
@@ -22,29 +25,12 @@ export const PostItem = ({post}: any) => {
     if (!userName) {
       return `Anonymous`;
     }
+    storage.set(`${post.id}User`, `${userName} ${lastName?.at(0)}.`);
     return `${userName} ${lastName?.at(0)}.`;
   };
 
-  const onShare = async () => {
-    try {
-      const result = await Share.share({
-        message: 'Поделится постом',
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error: any) {
-      console.log(error.message);
-    }
-  };
   return (
-    <View style={styles.container}>
+    <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.heading}>
         <Text style={styles.title}>{post.title}</Text>
         <Text style={styles.date}>{handleGetDate()}</Text>
@@ -67,12 +53,12 @@ export const PostItem = ({post}: any) => {
               source={require('../../../assets/unlikedButtonHeart.png')}></Image>
             <Text style={styles.info__count}>{post.likesCount}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onShare}>
+          <TouchableOpacity onPress={share}>
             <Image source={require('../../../assets/share.png')}></Image>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
