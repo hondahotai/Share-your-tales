@@ -18,7 +18,8 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: any) => {
           userAvatar
             ? {uri: userAvatar}
             : require('../../../assets/StateEmptyUserMedium.png')
-        }></Image>
+        }
+        style={styles.image}></Image>
       <Text style={styles.userData}>
         {userName && userLastName
           ? `${userName} ${userLastName}`
@@ -82,5 +83,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 40,
     left: 32,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 100,
   },
 });

@@ -208,6 +208,8 @@ const styles = StyleSheet.create({
   },
   heading__img: {
     borderRadius: 20,
+    width: 40,
+    height: 40,
   },
   tabs: {
     flexDirection: 'row',

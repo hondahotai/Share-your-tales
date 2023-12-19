@@ -16,6 +16,9 @@ import {emailValidation} from '../variables/emailValidation.ts';
 import {phoneValidation} from '../variables/phoneValidation.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
 import {useNavigation} from '@react-navigation/native';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {MMKV} from 'react-native-mmkv';
+import {storage} from '../utils/storage.ts';
 
 type EditProfileRequest = {
   avatarUrl: string;
@@ -33,6 +36,7 @@ export const ProfileScreen = () => {
   const navigation = useNavigation<any>();
 
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
+  const [isChangePhoto, setChangePhoto] = useState(false);
 
   const [UserEditProfile, {loading, error, data}] = useMutation(PROFILE_EDIT);
   const {
@@ -42,6 +46,7 @@ export const ProfileScreen = () => {
   } = useQuery(USER_ME);
 
   const [formInitialized, setFormInitialized] = useState(false);
+  const [selectImage, setSelectImage] = useState(dataUser.userMe.avatarUrl);
 
   const {
     control,
@@ -79,12 +84,16 @@ export const ProfileScreen = () => {
     return <Text>Loading...</Text>;
   }
 
+  const handleNavigationMainScreen = () => {
+    navigation.navigate('Main');
+  };
+
   const onSubmit = async (data: any) => {
     try {
       const response = await UserEditProfile({
         variables: {
           input: {
-            // avatarUrl: '',
+            avatarUrl: selectImage,
             email: data.email,
             firstName: data.firstName,
             country: data.country,
@@ -104,10 +113,124 @@ export const ProfileScreen = () => {
     }
   };
 
+  const handleLibraryLaunch = async () => {
+    let options = {
+      storageOptions: {
+        path: 'image',
+      },
+    };
+
+    try {
+      setChangePhoto(false);
+      const response = await launchImageLibrary(options);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        const fileUri = response.assets[0].uri;
+        const fileName = response.assets[0].fileName;
+        const fileCategory = 'AVATARS';
+
+        const signedUrl = await getSignedUrl(fileName, fileCategory);
+        const uploadFileToServer = await uploadFileToS3(fileUri, signedUrl);
+        const cleanUrl = getCleanUrl(signedUrl);
+        setSelectImage(cleanUrl);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleCameraLaunch = async () => {
+    let options = {
+      saveToPhotos: true,
+      mediaType: 'photo',
+    };
+
+    try {
+      setChangePhoto(false);
+      const response = await launchCamera(options);
+      if (response.didCancel) {
+        console.log('User cancelled camera picker');
+      } else if (response.errorCode) {
+        console.log('Camera Error: ', response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        const fileUri = response.assets[0].uri;
+        const fileName = response.assets[0].fileName;
+        const fileCategory = 'AVATARS';
+
+        const signedUrl = await getSignedUrl(fileName, fileCategory);
+        const uploadFileToServer = await uploadFileToS3(fileUri, signedUrl);
+        const cleanUrl = getCleanUrl(signedUrl);
+        setSelectImage(cleanUrl);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const token = storage.getString('userToken');
+
+  const getSignedUrl = async (fileName: any, fileCategory: any) => {
+    const apiUrl =
+      'https://internship-social-media.purrweb.com/v1/aws/signed-url';
+
+    try {
+      const response = await fetch(
+        `${apiUrl}?fileName=${encodeURIComponent(
+          fileName,
+        )}&fileCategory=${encodeURIComponent(fileCategory)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (response.ok) {
+        return response.text();
+      }
+    } catch (error) {
+      console.error('Error getting signed URL:', error);
+      throw error;
+    }
+  };
+
+  const uploadFileToS3 = async (fileUri: any, signedUrl: any) => {
+    try {
+      const file = await fetch(fileUri);
+      const blob = await file.blob();
+
+      const response = await fetch(signedUrl, {
+        method: 'PUT',
+        body: blob,
+        headers: {
+          'Content-Type': 'image/png',
+        },
+      });
+
+      if (!response.ok) {
+        new Error('Failed to upload image to S3');
+      }
+    } catch (error) {
+      console.error('Error uploading image to S3:', error);
+      throw error;
+    }
+  };
+
+  const getCleanUrl = (signedUrl: any) => {
+    return signedUrl.split('?')[0];
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
-        <Image source={require('../assets/ArrowLeftButtonBack.png')}></Image>
+        <TouchableOpacity onPress={handleNavigationMainScreen}>
+          <Image source={require('../assets/ArrowLeftButtonBack.png')}></Image>
+        </TouchableOpacity>
         <Text style={styles.title}>Profile</Text>
         <TouchableOpacity>
           <Text style={styles.submit} onPress={handleSubmit(onSubmit)}>
@@ -117,10 +240,21 @@ export const ProfileScreen = () => {
       </View>
       <ScrollView style={styles.scroll}>
         <View style={styles.photo__wrapper}>
-          <Image source={require('../assets/StateEmptyUserBig.png')}></Image>
-          <Image
-            style={styles.photo__icon}
-            source={require('../assets/DMButtonPhoto.png')}></Image>
+          <TouchableOpacity
+            onPress={() => {
+              setChangePhoto(true);
+            }}>
+            <Image
+              source={
+                selectImage
+                  ? {uri: selectImage}
+                  : require('../assets/StateEmptyUserBig.png')
+              }
+              style={styles.photo__image}></Image>
+            <Image
+              style={styles.photo__icon}
+              source={require('../assets/DMButtonPhoto.png')}></Image>
+          </TouchableOpacity>
         </View>
         <View>
           <Text style={styles.title__profile}>Personal info</Text>
@@ -310,6 +444,30 @@ export const ProfileScreen = () => {
           )}
         </View>
       </ScrollView>
+      {isChangePhoto && (
+        <View style={styles.overlay}>
+          <View style={styles.photo__change}>
+            <TouchableOpacity
+              style={styles.item__change}
+              onPress={handleCameraLaunch}>
+              <Text style={styles.item__text}>Take a photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.item__changeBorder}
+              onPress={handleLibraryLaunch}>
+              <Text style={styles.item__text}>Choose from the library</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.item__change}>
+              <Text style={styles.item__textRed}>Delete photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.item__cancel}
+              onPress={() => setChangePhoto(false)}>
+              <Text style={styles.item__text}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -320,6 +478,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: '#FFF',
     position: 'relative',
+    zIndex: 10,
   },
   heading: {
     flexDirection: 'row',
@@ -344,6 +503,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'relative',
   },
+  photo__image: {
+    width: 160,
+    height: 160,
+    borderRadius: 100,
+  },
+
   photo__icon: {
     position: 'absolute',
     top: 120,
@@ -406,5 +571,74 @@ const styles = StyleSheet.create({
   },
   scroll: {
     marginBottom: 16,
+    position: 'relative',
+  },
+  photo__change: {
+    position: 'absolute',
+    width: 343,
+    height: 200,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 32,
+    zIndex: 1000,
+    borderRadius: 20,
+    bottom: '0%',
+    alignSelf: 'center',
+  },
+  item__change: {
+    backgroundColor: '#FFF',
+    paddingHorizontal: 10,
+    paddingTop: 12,
+    textAlign: 'center',
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
+  item__changeBorder: {
+    backgroundColor: '#FFF',
+    paddingHorizontal: 10,
+    paddingTop: 12,
+    textAlign: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(155, 155, 155, 1),',
+    borderRadius: 20,
+  },
+  item__text: {
+    color: 'rgba(135, 183, 31, 1)',
+    fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    flex: 1,
+    alignItems: 'center',
+  },
+  item__textRed: {
+    color: 'rgba(194, 83, 76, 1)',
+    fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    flex: 1,
+    alignItems: 'center',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 10,
+    flex: 1,
+  },
+  item__cancel: {
+    backgroundColor: '#FFF',
+    paddingHorizontal: 10,
+    paddingTop: 12,
+    textAlign: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    marginTop: 10,
   },
 });
