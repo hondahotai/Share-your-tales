@@ -170,6 +170,31 @@ export const ProfileScreen = () => {
     }
   };
 
+  const handleDeletePhoto = async () => {
+    const apiUrl =
+      'https://internship-social-media.purrweb.com/v1/aws/delete-s3-file';
+    try {
+      const response = await fetch(
+        `${apiUrl}?fileCategory=AVATARS&fileKey=${encodeURIComponent(
+          selectImage,
+        )}`,
+        {
+          method: 'DELETE',
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (response.ok) {
+        setSelectImage(null);
+      } else {
+        console.log(response.status);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const token = storage.getString('userToken');
 
   const getSignedUrl = async (fileName: any, fileCategory: any) => {
@@ -457,7 +482,9 @@ export const ProfileScreen = () => {
               onPress={handleLibraryLaunch}>
               <Text style={styles.item__text}>Choose from the library</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.item__change}>
+            <TouchableOpacity
+              style={styles.item__change}
+              onPress={handleDeletePhoto}>
               <Text style={styles.item__textRed}>Delete photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
