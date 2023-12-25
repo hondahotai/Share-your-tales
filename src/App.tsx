@@ -9,15 +9,16 @@ import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Router from './navigation/Router.tsx';
-import {ApolloProvider} from "@apollo/client";
-import client from "./apollo/client.ts";
+import {ApolloProvider} from '@apollo/client';
+import client from './apollo/client.ts';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 function App() {
-  return(
-  <ApolloProvider client={client}>
-    <Router />
-  </ApolloProvider>
-  )
+  return (
+    <ApolloProvider client={client}>
+      <Router />
+    </ApolloProvider>
+  );
 }
 
 export default App;

@@ -9,17 +9,29 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
 import {useQuery} from '@apollo/client';
 import {POSTS} from '../apollo/queries/postsQueries.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
 import {ToggleMenu} from '../components/modules/toggleMenu/toggleMenu.tsx';
 import {PostModal} from '../components/modules/PostModal/PostModal.tsx';
+import {onShare} from '../utils/shareUtils.ts';
+import {
+  handleNavigationFavoritesScreen,
+  handleNavigationMainScreen,
+  handleNavigationMyPostsScreen,
+} from '../utils/handleNavigationBottomMenu.ts';
+import {useFocusEffect} from '@react-navigation/native';
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
-  const {loading, error, data} = useQuery(POSTS, {
+  const {
+    refetch: refetchMain,
+    loading,
+    error,
+    data,
+  } = useQuery(POSTS, {
     variables: {
       input: {
         afterCursor: '',
@@ -33,6 +45,12 @@ export const MainScreen = () => {
     error: errorUser,
     data: dataUser,
   } = useQuery(USER_ME);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetchMain();
+    }, []),
+  );
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const sidebarPosition = useState(new Animated.Value(-288))[0];
@@ -69,25 +87,6 @@ export const MainScreen = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  const onShare = async () => {
-    try {
-      const result = await Share.share({
-        message: 'Поделится постом',
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error: any) {
-      console.log(error.message);
-    }
-  };
-
   const [selectedPost, setSelectedPost] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -102,7 +101,7 @@ export const MainScreen = () => {
         <Text style={styles.heading__text}>{`Hello ${
           dataUser?.userMe?.firstName ? dataUser.userMe?.firstName : ``
         }!`}</Text>
-        <TouchableOpacity onPress={toggleSidebar}>
+        <TouchableOpacity onPress={() => toggleSidebar()}>
           <Image
             style={styles.heading__img}
             source={
@@ -139,19 +138,21 @@ export const MainScreen = () => {
         ))}
       </ScrollView>
       <View style={styles.navigation}>
-        <TouchableOpacity style={styles.navigation__inner}>
+        <TouchableOpacity
+          style={styles.navigation__inner}
+          onPress={handleNavigationMainScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/MainActive.png')}></Image>
           <Text style={styles.navigation__text}>Main</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/bookmarkInActive.png')}></Image>
           <Text style={styles.navigation__text}>Favorites</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/PostInactive.png')}></Image>

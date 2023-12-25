@@ -5,10 +5,30 @@ import {
   TouchableOpacity,
   View,
   Share,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import {storage} from '../../../utils/storage.ts';
+import {useRef, useState} from 'react';
+import {useMutation} from '@apollo/client';
+import {POST_DELETE} from '../../../apollo/mutations/postDelete.ts';
+import {LIKE} from '../../../apollo/mutations/likeMutation.ts';
+import {UNLIKE} from '../../../apollo/mutations/unlikeMutation.ts';
 
-export const PostItem = ({post, onPress, share}: any) => {
+interface PostItemProps {
+  post: {id: string; title: string};
+  onPress: () => void;
+  onShare: () => void;
+  onDelete: (id: string) => void;
+}
+
+export const PostItem = ({
+  post,
+  onPress,
+  share,
+  isSwipeToDeleteEnabled,
+  refetch,
+}: any) => {
   const handleGetDate = () => {
     let date = new Date(post.createdAt);
 
@@ -29,36 +49,178 @@ export const PostItem = ({post, onPress, share}: any) => {
     return `${userName} ${lastName?.at(0)}.`;
   };
 
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = useRef(
+    isSwipeToDeleteEnabled &&
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, gestureState) => {
+          return Math.abs(gestureState.dx) > 10;
+        },
+        onPanResponderGrant: () => {
+          pan.setOffset({
+            x: pan.x._value,
+            y: 0,
+          });
+        },
+        onPanResponderMove: Animated.event([null, {dx: pan.x}], {
+          useNativeDriver: false,
+        }),
+        onPanResponderRelease: (e, gestureState) => {
+          pan.flattenOffset();
+          if (gestureState.dx < -100) {
+            Animated.timing(pan.x, {
+              toValue: -150,
+              duration: 200,
+              useNativeDriver: false,
+            }).start();
+          } else {
+            Animated.spring(pan, {
+              toValue: {x: 0, y: 0},
+              useNativeDriver: false,
+            }).start();
+          }
+        },
+      }),
+  ).current;
+
+  const animatedStyle = {
+    transform: pan.getTranslateTransform(),
+  };
+
+  const [Delete, {loading, error, data}] = useMutation(POST_DELETE);
+  const [Like, {loading: loadingLike, error: errorLike, data: dataLike}] =
+    useMutation(LIKE);
+  const [
+    Unlike,
+    {loading: loadingUnlike, error: errorUnlike, data: dataUnlike},
+  ] = useMutation(UNLIKE);
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+
+  const handleLikeButton = async () => {
+    try {
+      if (isLiked) {
+        await Unlike({
+          variables: {
+            input: {
+              id: post.id,
+            },
+          },
+        });
+        setIsLiked(false);
+      } else {
+        await Like({
+          variables: {
+            input: {
+              id: post.id,
+            },
+          },
+        });
+        setIsLiked(true);
+      }
+    } catch (e) {}
+  };
+
+  const handleDeletePost = async () => {
+    const apiUrl =
+      'https://internship-social-media.purrweb.com/v1/aws/delete-s3-file';
+    try {
+      const responseGraph = await Delete({
+        variables: {
+          input: {
+            id: post.id,
+          },
+        },
+      });
+
+      const response = await fetch(
+        `${apiUrl}?fileCategory=POSTS&fileKey=${encodeURIComponent(post.id)}`,
+        {
+          method: 'DELETE',
+          headers: {
+            authorization: `Bearer ${storage.getString('userToken')}`,
+          },
+        },
+      );
+      refetch();
+
+      if (response.ok) {
+        console.log(response.status);
+      } else {
+        console.log(response.status);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
-      <View style={styles.heading}>
-        <Text style={styles.title}>{post.title}</Text>
-        <Text style={styles.date}>{handleGetDate()}</Text>
-      </View>
-      <Image style={styles.img} source={{uri: post.mediaUrl}}></Image>
-      <View style={styles.info__wrapper}>
-        <View style={styles.user}>
-          <Image
-            style={styles.user__img}
-            source={
-              post.author.avatarUrl
-                ? {uri: post.author.avatarUrl}
-                : require('../../../assets/StateEmptyUserSmall.png')
-            }></Image>
-          <Text style={styles.user__name}>{handleGetUserName()}</Text>
-        </View>
-        <View style={styles.info__btns}>
-          <TouchableOpacity style={styles.info__like}>
+    <View style={styles.container}>
+      {isSwipeToDeleteEnabled && (
+        <Animated.View
+          style={[
+            styles.delete__button,
+            {
+              opacity: pan.x.interpolate({
+                inputRange: [-150, 0],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+              }),
+              transform: [
+                {
+                  translateX: pan.x.interpolate({
+                    inputRange: [-150, 0],
+                    outputRange: [-50, 0],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+            },
+          ]}>
+          <TouchableOpacity onPress={handleDeletePost}>
             <Image
-              source={require('../../../assets/unlikedButtonHeart.png')}></Image>
-            <Text style={styles.info__count}>{post.likesCount}</Text>
+              style={styles.delete__image}
+              source={require('../../../assets/solid-trash.png')}></Image>
+            <Text style={styles.delete__text}>Delete</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={share}>
-            <Image source={require('../../../assets/share.png')}></Image>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
+        </Animated.View>
+      )}
+      <Animated.View
+        style={animatedStyle}
+        {...(isSwipeToDeleteEnabled ? panResponder.panHandlers : {})}>
+        <TouchableOpacity onPress={onPress} style={styles.wrapper}>
+          <View style={styles.heading}>
+            <Text style={styles.title}>{post.title}</Text>
+            <Text style={styles.date}>{handleGetDate()}</Text>
+          </View>
+          <Image style={styles.img} source={{uri: post.mediaUrl}}></Image>
+          <View style={styles.info__wrapper}>
+            <View style={styles.user}>
+              <Image
+                style={styles.user__img}
+                source={
+                  post.author.avatarUrl
+                    ? {uri: post.author.avatarUrl}
+                    : require('../../../assets/StateEmptyUserSmall.png')
+                }></Image>
+              <Text style={styles.user__name}>{handleGetUserName()}</Text>
+            </View>
+            <View style={styles.info__btns}>
+              <TouchableOpacity
+                style={styles.info__like}
+                onPress={handleLikeButton}>
+                <Image
+                  source={require('../../../assets/unlikedButtonHeart.png')}></Image>
+                <Text style={styles.info__count}>{post.likesCount}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={share}>
+                <Image source={require('../../../assets/share.png')}></Image>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
   );
 };
 
@@ -70,6 +232,8 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     flex: 1,
     marginVertical: 4,
+    overflow: 'hidden',
+    position: 'relative',
   },
   heading: {
     flexDirection: 'row',
@@ -129,5 +293,26 @@ const styles = StyleSheet.create({
   },
   info__count: {
     color: '#131313',
+  },
+  delete__button: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: -50,
+    width: 130,
+    backgroundColor: '#C2534C',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wrapper: {
+    position: 'relative',
+  },
+  delete__text: {
+    color: '#FFF',
+    textAlign: 'center',
+  },
+  delete__image: {
+    alignSelf: 'center',
+    marginBottom: 8,
   },
 });
