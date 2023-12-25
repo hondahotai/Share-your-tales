@@ -9,11 +9,12 @@ import {
   PanResponder,
 } from 'react-native';
 import {storage} from '../../../utils/storage.ts';
-import {useRef, useState} from 'react';
+import {useContext, useRef, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {POST_DELETE} from '../../../apollo/mutations/postDelete.ts';
 import {LIKE} from '../../../apollo/mutations/likeMutation.ts';
 import {UNLIKE} from '../../../apollo/mutations/unlikeMutation.ts';
+import {ThemeContext} from '../../../context/ThemeContext.tsx';
 
 interface PostItemProps {
   post: {id: string; title: string};
@@ -48,6 +49,8 @@ export const PostItem = ({
     storage.set(`${post.id}User`, `${userName} ${lastName?.at(0)}.`);
     return `${userName} ${lastName?.at(0)}.`;
   };
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -155,7 +158,11 @@ export const PostItem = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? `#1B1B1B` : `#F4F5F4`,
+      }}>
       {isSwipeToDeleteEnabled && (
         <Animated.View
           style={[
@@ -190,7 +197,9 @@ export const PostItem = ({
         {...(isSwipeToDeleteEnabled ? panResponder.panHandlers : {})}>
         <TouchableOpacity onPress={onPress} style={styles.wrapper}>
           <View style={styles.heading}>
-            <Text style={styles.title}>{post.title}</Text>
+            <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
+              {post.title}
+            </Text>
             <Text style={styles.date}>{handleGetDate()}</Text>
           </View>
           <Image style={styles.img} source={{uri: post.mediaUrl}}></Image>
@@ -211,10 +220,21 @@ export const PostItem = ({
                 onPress={handleLikeButton}>
                 <Image
                   source={require('../../../assets/unlikedButtonHeart.png')}></Image>
-                <Text style={styles.info__count}>{post.likesCount}</Text>
+                <Text
+                  style={{
+                    ...styles.info__count,
+                    color: isDark ? `#DEDEDE` : `#131313`,
+                  }}>
+                  {post.likesCount}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={share}>
-                <Image source={require('../../../assets/share.png')}></Image>
+                <Image
+                  source={
+                    isDark
+                      ? require('../../../assets/shareWhite.png')
+                      : require('../../../assets/share.png')
+                  }></Image>
               </TouchableOpacity>
             </View>
           </View>

@@ -1,11 +1,14 @@
 import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigationState} from '@react-navigation/native';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
+import {ThemeContext} from '../../../context/ThemeContext.tsx';
 
 export const EmptyPage = () => {
   const currentRoute = useNavigationState(
     state => state.routes[state.index]?.name,
   );
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const [text, setText] = useState('');
 
@@ -21,8 +24,14 @@ export const EmptyPage = () => {
     <View style={styles.container}>
       <Image
         style={styles.image}
-        source={require('../../../assets/upsFrame.png')}></Image>
-      <Text style={styles.text}>{text}</Text>
+        source={
+          isDark
+            ? require('../../../assets/upsFrameBlack.png')
+            : require('../../../assets/upsFrame.png')
+        }></Image>
+      <Text style={{...styles.text, color: isDark ? `#696969` : `#131313`}}>
+        {text}
+      </Text>
     </View>
   );
 };

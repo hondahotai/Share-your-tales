@@ -10,7 +10,7 @@ import {
 import {useMutation, useQuery} from '@apollo/client';
 import {PROFILE_EDIT} from '../apollo/mutations/profileMutations.ts';
 import {Controller, useForm} from 'react-hook-form';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {birthValidation} from '../variables/birthValidation.ts';
 import {emailValidation} from '../variables/emailValidation.ts';
 import {phoneValidation} from '../variables/phoneValidation.ts';
@@ -19,6 +19,7 @@ import {useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {MMKV} from 'react-native-mmkv';
 import {storage} from '../utils/storage.ts';
+import {ThemeContext} from '../context/ThemeContext.tsx';
 
 type EditProfileRequest = {
   avatarUrl: string;
@@ -47,6 +48,8 @@ export const ProfileScreen = () => {
 
   const [formInitialized, setFormInitialized] = useState(false);
   const [selectImage, setSelectImage] = useState(dataUser.userMe.avatarUrl);
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const {
     control,
@@ -251,12 +254,23 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? `#131313` : `#FFF`,
+      }}>
       <View style={styles.heading}>
         <TouchableOpacity onPress={handleNavigationMainScreen}>
-          <Image source={require('../assets/ArrowLeftButtonBack.png')}></Image>
+          <Image
+            source={
+              isDark
+                ? require('../assets/buttonBlackArrowSecond.png')
+                : require('../assets/ArrowLeftButtonBack.png')
+            }></Image>
         </TouchableOpacity>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
+          Profile
+        </Text>
         <TouchableOpacity>
           <Text style={styles.submit} onPress={handleSubmit(onSubmit)}>
             Done
@@ -278,22 +292,33 @@ export const ProfileScreen = () => {
               style={styles.photo__image}></Image>
             <Image
               style={styles.photo__icon}
-              source={require('../assets/DMButtonPhoto.png')}></Image>
+              source={
+                isDark
+                  ? require('../assets/DMButtonPhotoBlack.png')
+                  : require('../assets/DMButtonPhoto.png')
+              }></Image>
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.title__profile}>Personal info</Text>
+          <Text
+            style={{
+              ...styles.title__profile,
+              color: isDark ? `#FFF` : `#131313`,
+            }}>
+            Personal info
+          </Text>
           <Controller
             control={control}
             render={({field: {onChange, onBlur, value}}) => (
               <View>
                 <Text style={styles.label}>First name</Text>
                 <TextInput
-                  style={styles.input}
+                  style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                   placeholder="Enter your first name"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 />
               </View>
             )}
@@ -308,11 +333,12 @@ export const ProfileScreen = () => {
               <View>
                 <Text style={styles.label}>Last name</Text>
                 <TextInput
-                  style={styles.input}
+                  style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                   placeholder="Enter your last name"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 />
               </View>
             )}
@@ -327,11 +353,12 @@ export const ProfileScreen = () => {
               <View>
                 <Text style={styles.label}>Surname</Text>
                 <TextInput
-                  style={styles.input}
+                  style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                   placeholder="Enter your surname"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 />
               </View>
             )}
@@ -342,7 +369,13 @@ export const ProfileScreen = () => {
           )}
         </View>
         <View>
-          <Text style={styles.title__profile}>Gender</Text>
+          <Text
+            style={{
+              ...styles.title__profile,
+              color: isDark ? `#FFF` : `#131313`,
+            }}>
+            Gender
+          </Text>
           <Controller
             control={control}
             render={({field: {onChange, value}}) => (
@@ -350,18 +383,52 @@ export const ProfileScreen = () => {
                 <TouchableOpacity
                   style={styles.choice}
                   onPress={() => onChange('MALE')}>
-                  <View style={styles.outerCircle}>
-                    {value === 'MALE' && <View style={styles.innerCircle} />}
+                  <View
+                    style={{
+                      ...styles.outerCircle,
+                      borderColor: isDark ? `#696969FF` : `#131313`,
+                    }}>
+                    {value === 'MALE' && (
+                      <View
+                        style={{
+                          ...styles.innerCircle,
+                          backgroundColor: isDark ? `#FFF` : `#131313`,
+                        }}
+                      />
+                    )}
                   </View>
-                  <Text style={styles.label__gender}>Male</Text>
+                  <Text
+                    style={{
+                      ...styles.label__gender,
+                      color: isDark ? `#FFF` : `#131313`,
+                    }}>
+                    Male
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.choice}
                   onPress={() => onChange('FEMALE')}>
-                  <View style={styles.outerCircle}>
-                    {value === 'FEMALE' && <View style={styles.innerCircle} />}
+                  <View
+                    style={{
+                      ...styles.outerCircle,
+                      borderColor: isDark ? `#696969FF` : `#131313`,
+                    }}>
+                    {value === 'FEMALE' && (
+                      <View
+                        style={{
+                          ...styles.innerCircle,
+                          backgroundColor: isDark ? `#FFF` : `#131313`,
+                        }}
+                      />
+                    )}
                   </View>
-                  <Text style={styles.label__gender}>Female</Text>
+                  <Text
+                    style={{
+                      ...styles.label__gender,
+                      color: isDark ? `#FFF` : `#131313`,
+                    }}>
+                    Female
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -369,8 +436,14 @@ export const ProfileScreen = () => {
           />
         </View>
         <View>
-          <Text style={styles.title__profile}>Date of birth</Text>
-          <Text>B-day</Text>
+          <Text
+            style={{
+              ...styles.title__profile,
+              color: isDark ? `#FFF` : `#131313`,
+            }}>
+            Date of birth
+          </Text>
+          <Text style={styles.label}>B-day</Text>
           <Controller
             control={control}
             rules={{
@@ -381,12 +454,13 @@ export const ProfileScreen = () => {
             }}
             render={({field: {onChange, onBlur, value}}) => (
               <TextInput
-                style={styles.input}
+                style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
                 placeholder="Select bate of birth"
                 keyboardType="numeric"
+                placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
               />
             )}
             name="dateOfBirth"
@@ -396,7 +470,13 @@ export const ProfileScreen = () => {
           )}
         </View>
         <View>
-          <Text style={styles.title__profile}>Account info</Text>
+          <Text
+            style={{
+              ...styles.title__profile,
+              color: isDark ? `#FFF` : `#131313`,
+            }}>
+            Account info
+          </Text>
           <Controller
             control={control}
             rules={{
@@ -410,11 +490,12 @@ export const ProfileScreen = () => {
               <View>
                 <Text style={styles.label}>E-mail</Text>
                 <TextInput
-                  style={styles.input}
+                  style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Select email"
+                  placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 />
               </View>
             )}
@@ -425,21 +506,16 @@ export const ProfileScreen = () => {
           )}
           <Controller
             control={control}
-            // rules={{
-            //   pattern: {
-            //     value: phoneValidation,
-            //     message: 'Enter a valid phone number',
-            //   },
-            // }}
             render={({field: {onChange, onBlur, value}}) => (
               <View>
                 <Text style={styles.label}>Phone number</Text>
                 <TextInput
-                  style={styles.input}
+                  style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Enter your phone number"
+                  placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 />
               </View>
             )}
@@ -454,11 +530,12 @@ export const ProfileScreen = () => {
               <View>
                 <Text style={styles.label}>Country</Text>
                 <TextInput
-                  style={styles.input}
+                  style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Enter your country"
+                  placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 />
               </View>
             )}
@@ -473,22 +550,34 @@ export const ProfileScreen = () => {
         <View style={styles.overlay}>
           <View style={styles.photo__change}>
             <TouchableOpacity
-              style={styles.item__change}
+              style={{
+                ...styles.item__change,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={handleCameraLaunch}>
               <Text style={styles.item__text}>Take a photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.item__changeBorder}
+              style={{
+                ...styles.item__changeBorder,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={handleLibraryLaunch}>
               <Text style={styles.item__text}>Choose from the library</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.item__change}
+              style={{
+                ...styles.item__change,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={handleDeletePhoto}>
               <Text style={styles.item__textRed}>Delete photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.item__cancel}
+              style={{
+                ...styles.item__cancel,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={() => setChangePhoto(false)}>
               <Text style={styles.item__text}>Cancel</Text>
             </TouchableOpacity>

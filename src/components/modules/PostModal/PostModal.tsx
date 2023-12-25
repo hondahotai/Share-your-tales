@@ -10,6 +10,8 @@ import {
 import {useQuery} from '@apollo/client';
 import {POST} from '../../../apollo/queries/PostQueries.ts';
 import {storage} from '../../../utils/storage.ts';
+import {useContext} from 'react';
+import {ThemeContext} from '../../../context/ThemeContext.tsx';
 
 export const PostModal = ({post, visible, onClose, share}: any) => {
   const {loading, error, data} = useQuery(POST, {
@@ -19,6 +21,8 @@ export const PostModal = ({post, visible, onClose, share}: any) => {
       },
     },
   });
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   if (loading) {
     return (
@@ -42,14 +46,24 @@ export const PostModal = ({post, visible, onClose, share}: any) => {
 
   return (
     <Modal animationType="slide" visible={visible} onRequestClose={onClose}>
-      <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          backgroundColor: isDark ? `#131313` : `#FFF`,
+        }}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={onClose} style={styles.close__wrap}>
             <Image
               style={styles.close}
-              source={require('../../../assets/ArrowLeftButtonBack.png')}></Image>
+              source={
+                isDark
+                  ? require('../../../assets/buttonBlackArrowSecond.png')
+                  : require('../../../assets/ArrowLeftButtonBack.png')
+              }></Image>
           </TouchableOpacity>
-          <Text style={styles.title}>{data?.post?.title}</Text>
+          <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
+            {data?.post?.title}
+          </Text>
         </View>
         <Text style={styles.date}>
           {post ? storage.getString(post.id) : `None date`}
@@ -62,10 +76,20 @@ export const PostModal = ({post, visible, onClose, share}: any) => {
                 ? {uri: data?.post.mediaUrl}
                 : require('../../../assets/StateEmptyUserMedium.png')
             }></Image>
-          <Text style={styles.description}>{data?.post.description}</Text>
+          <Text
+            style={{
+              ...styles.description,
+              color: isDark ? `#DEDEDE` : `#131313`,
+            }}>
+            {data?.post.description}
+          </Text>
         </View>
       </View>
-      <View style={styles.info__wrapper}>
+      <View
+        style={{
+          ...styles.info__wrapper,
+          backgroundColor: isDark ? `#131313` : `#FFF`,
+        }}>
         <View style={styles.user}>
           <Image
             style={styles.user__img}
@@ -84,10 +108,21 @@ export const PostModal = ({post, visible, onClose, share}: any) => {
           <TouchableOpacity style={styles.info__like}>
             <Image
               source={require('../../../assets/unlikedButtonHeart.png')}></Image>
-            <Text style={styles.info__count}>{post?.likesCount}</Text>
+            <Text
+              style={{
+                ...styles.info__count,
+                color: isDark ? `#DEDEDE` : `#131313`,
+              }}>
+              {post?.likesCount}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={share}>
-            <Image source={require('../../../assets/share.png')}></Image>
+            <Image
+              source={
+                isDark
+                  ? require('../../../assets/shareWhite.png')
+                  : require('../../../assets/share.png')
+              }></Image>
           </TouchableOpacity>
         </View>
       </View>

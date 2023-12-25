@@ -8,15 +8,17 @@ import {
   View,
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {storage} from '../utils/storage.ts';
 import {useMutation} from '@apollo/client';
 import {POST_CREATE} from '../apollo/mutations/postCreate.ts';
 import {handleNavigationMyPostsScreen} from '../utils/handleNavigationBottomMenu.ts';
+import {ThemeContext} from '../context/ThemeContext.tsx';
 
 export const CreatePostScreen = () => {
   const [PostCreate, {loading, error, data}] = useMutation(POST_CREATE);
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const {
     control,
@@ -172,12 +174,23 @@ export const CreatePostScreen = () => {
     reset();
   };
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? `#131313` : `#FFF`,
+      }}>
       <View style={styles.heading}>
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
-          <Image source={require('../assets/ArrowLeftButtonBack.png')}></Image>
+          <Image
+            source={
+              isDark
+                ? require('../assets/buttonBlackArrowSecond.png')
+                : require('../assets/ArrowLeftButtonBack.png')
+            }></Image>
         </TouchableOpacity>
-        <Text style={styles.title}>Create post</Text>
+        <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
+          Create post
+        </Text>
         <TouchableOpacity onPress={handleReset}>
           <Image source={require('../assets/ButtoncrossWhite.png')}></Image>
         </TouchableOpacity>
@@ -196,7 +209,11 @@ export const CreatePostScreen = () => {
               source={require('../assets/heroicons-solid-cloud-arrow-upW.png')}></Image>
           )}
 
-          {!selectImage && <Text>Upload your photo here</Text>}
+          {!selectImage && (
+            <Text style={{color: isDark ? `#FFF` : `#131313`}}>
+              Upload your photo here
+            </Text>
+          )}
         </TouchableOpacity>
         <Controller
           control={control}
@@ -207,11 +224,12 @@ export const CreatePostScreen = () => {
             <View>
               <Text style={styles.label}>Title</Text>
               <TextInput
-                style={styles.input}
+                style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                 placeholder="Enter title of post"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
               />
             </View>
           )}
@@ -227,11 +245,12 @@ export const CreatePostScreen = () => {
             <View>
               <Text style={styles.label}>Post</Text>
               <TextInput
-                style={styles.input}
+                style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
                 placeholder="Enter your post"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
               />
             </View>
           )}
@@ -239,26 +258,44 @@ export const CreatePostScreen = () => {
         />
         {errors.post && <Text>This is required.</Text>}
         <TouchableOpacity
-          style={styles.button}
+          style={{
+            ...styles.button,
+            backgroundColor: isDark ? `#303030` : `#87B71F`,
+          }}
           onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.button__text}>Publish</Text>
+          <Text
+            style={{
+              ...styles.button__text,
+              color: isDark ? `#B8DE64` : `#FFF`,
+            }}>
+            Publish
+          </Text>
         </TouchableOpacity>
       </ScrollView>
       {isUpload && (
         <View style={styles.overlay}>
           <View style={styles.photo__change}>
             <TouchableOpacity
-              style={styles.item__change}
+              style={{
+                ...styles.item__change,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={handleCameraLaunch}>
               <Text style={styles.item__text}>Take a photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.item__change}
+              style={{
+                ...styles.item__change,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={handleLibraryLaunch}>
               <Text style={styles.item__text}>Choose from the library</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.item__cancel}
+              style={{
+                ...styles.item__change,
+                backgroundColor: isDark ? `#131313` : `#FFF`,
+              }}
               onPress={() => setUpload(false)}>
               <Text style={styles.item__text}>Cancel</Text>
             </TouchableOpacity>

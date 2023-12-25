@@ -9,11 +9,12 @@ import {
   View,
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {SIGN_UP} from '../apollo/mutations/authMutations.ts';
 import {storage} from '../utils/storage.ts';
 import {Success} from '../components/modules/Success/Success.tsx';
+import {ThemeContext} from '../context/ThemeContext.tsx';
 
 type FormData = {
   email: string;
@@ -39,6 +40,8 @@ export const RegistrationScreen = ({navigation}: any) => {
       confirmPassword: '',
     },
   });
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const [signUp, {loading, error, data}] = useMutation(SIGN_UP);
   const [isError, setError] = useState('');
@@ -80,10 +83,18 @@ export const RegistrationScreen = ({navigation}: any) => {
   return (
     <>
       {isSuccess ? (
-        <View style={styles.container}>
+        <View
+          style={{
+            ...styles.container,
+            backgroundColor: isDark ? `#131313` : `#FFF`,
+          }}>
           <View>
             <Text style={styles.title}>Join us</Text>
-            <Text style={styles.subtitle}>
+            <Text
+              style={{
+                ...styles.subtitle,
+                color: isDark ? `#FFF` : `#131313`,
+              }}>
               You will be able to fully communicate
             </Text>
           </View>
@@ -95,13 +106,20 @@ export const RegistrationScreen = ({navigation}: any) => {
                 required: true,
               }}
               render={({field: {onChange, onBlur, value}}) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your e-mail"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <View>
+                  <Text style={styles.label}>E-mail</Text>
+                  <TextInput
+                    style={{
+                      ...styles.input,
+                      color: isDark ? `#FFF` : `#131313`,
+                    }}
+                    placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
+                    placeholder="Enter your e-mail"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                </View>
               )}
               name="email"
             />
@@ -115,8 +133,13 @@ export const RegistrationScreen = ({navigation}: any) => {
               }}
               render={({field: {onChange, onBlur, value}}) => (
                 <View style={styles.input__wrapper}>
+                  <Text style={styles.label}>Password</Text>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      color: isDark ? `#FFF` : `#131313`,
+                    }}
+                    placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                     placeholder="Enter your password"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -143,8 +166,13 @@ export const RegistrationScreen = ({navigation}: any) => {
               }}
               render={({field: {onChange, onBlur, value}}) => (
                 <View style={styles.input__wrapper}>
+                  <Text style={styles.label}>Confirm password</Text>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      color: isDark ? `#FFF` : `#131313`,
+                    }}
+                    placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                     placeholder="Confirm your password"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -170,7 +198,8 @@ export const RegistrationScreen = ({navigation}: any) => {
                 onPress={() => {
                   navigation.navigate('Login');
                 }}>
-                <Text style={styles.login}>
+                <Text
+                  style={{...styles.login, color: isDark ? `#FFF` : `#131313`}}>
                   Already have an account?
                   <Text style={styles.login__text}> Log in</Text>
                 </Text>
@@ -280,5 +309,12 @@ const styles = StyleSheet.create({
     left: -25,
     width: 18,
     height: 18,
+  },
+  label: {
+    color: '#9B9B9B',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '600',
+    marginTop: 16,
   },
 });

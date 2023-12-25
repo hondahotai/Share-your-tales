@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
 import {useQuery} from '@apollo/client';
 import {POSTS} from '../apollo/queries/postsQueries.ts';
@@ -23,6 +23,7 @@ import {
   handleNavigationMyPostsScreen,
 } from '../utils/handleNavigationBottomMenu.ts';
 import {useFocusEffect} from '@react-navigation/native';
+import {ThemeContext} from '../context/ThemeContext.tsx';
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
@@ -51,6 +52,8 @@ export const MainScreen = () => {
       refetchMain();
     }, []),
   );
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const sidebarPosition = useState(new Animated.Value(-288))[0];
@@ -96,9 +99,17 @@ export const MainScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? `#131313` : `#FFF`,
+      }}>
       <View style={styles.heading}>
-        <Text style={styles.heading__text}>{`Hello ${
+        <Text
+          style={{
+            ...styles.heading__text,
+            color: isDark ? `#FFF` : `#131313`,
+          }}>{`Hello ${
           dataUser?.userMe?.firstName ? dataUser.userMe?.firstName : ``
         }!`}</Text>
         <TouchableOpacity onPress={() => toggleSidebar()}>
@@ -117,14 +128,20 @@ export const MainScreen = () => {
           onPress={() => {
             setTabActive(true);
           }}>
-          <Text style={styles.tab__text}>New</Text>
+          <Text
+            style={{...styles.tab__text, color: isDark ? `#FFF` : `#131313`}}>
+            New
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={isTabActive ? styles.tab : styles.tab__active}
           onPress={() => {
             setTabActive(false);
           }}>
-          <Text style={styles.tab__text}>Top</Text>
+          <Text
+            style={{...styles.tab__text, color: isDark ? `#FFF` : `#131313`}}>
+            Top
+          </Text>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -144,19 +161,37 @@ export const MainScreen = () => {
           <Image
             style={styles.navigation__img}
             source={require('../assets/MainActive.png')}></Image>
-          <Text style={styles.navigation__text}>Main</Text>
+          <Text
+            style={{
+              ...styles.navigation__text,
+              color: isDark ? `#B8DE64` : `#131313`,
+            }}>
+            Main
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/bookmarkInActive.png')}></Image>
-          <Text style={styles.navigation__text}>Favorites</Text>
+          <Text
+            style={{
+              ...styles.navigation__text,
+              color: isDark ? `#696969` : `#131313`,
+            }}>
+            Favorites
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/PostInactive.png')}></Image>
-          <Text style={styles.navigation__text}>My posts</Text>
+          <Text
+            style={{
+              ...styles.navigation__text,
+              color: isDark ? `#696969` : `#131313`,
+            }}>
+            My posts
+          </Text>
         </TouchableOpacity>
       </View>
       <Animated.View

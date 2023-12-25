@@ -1,10 +1,13 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {storage} from '../../../utils/storage.ts';
+import {ThemeContext} from '../../../context/ThemeContext.tsx';
 
 export const ToggleMenu = ({userName, userLastName, userAvatar}: any) => {
   const navigation = useNavigation<any>();
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const handleExitButton = () => {
     storage.set('userToken', '');
@@ -12,7 +15,11 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: any) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? '#131313' : 'white',
+      }}>
       <Image
         source={
           userAvatar
@@ -20,7 +27,7 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: any) => {
             : require('../../../assets/StateEmptyUserMedium.png')
         }
         style={styles.image}></Image>
-      <Text style={styles.userData}>
+      <Text style={{...styles.userData, color: isDark ? `#FFF` : `black`}}>
         {userName && userLastName
           ? `${userName} ${userLastName}`
           : userName
@@ -33,18 +40,39 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: any) => {
           navigation.navigate('Profile');
         }}>
         <Image
-          source={require('../../../assets/toggleMenuUserIcon.png')}></Image>
-        <Text style={styles.buttons__text}>Profile</Text>
+          source={
+            isDark
+              ? require('../../../assets/toggleMenyUserWhiteIcon.png')
+              : require('../../../assets/toggleMenuUserIcon.png')
+          }></Image>
+        <Text
+          style={{...styles.buttons__text, color: isDark ? `#FFF` : `#131313`}}>
+          Profile
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.buttons} onPress={handleExitButton}>
         <Image
-          source={require('../../../assets/toggleMenuExitIcon.png')}></Image>
-        <Text style={styles.buttons__text}>Exit</Text>
+          source={
+            isDark
+              ? require('../../../assets/toggleMenyExitWhiteIcon.png')
+              : require('../../../assets/toggleMenuExitIcon.png')
+          }></Image>
+        <Text
+          style={{...styles.buttons__text, color: isDark ? `#FFF` : `#131313`}}>
+          Exit
+        </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.theme}>
+      <TouchableOpacity style={styles.theme} onPress={toggleTheme}>
         <Image
-          source={require('../../../assets/toggleMenuSunIcon.png')}></Image>
-        <Text style={styles.buttons__text}>Light theme</Text>
+          source={
+            isDark
+              ? require('../../../assets/toggleMenuMoonIcon.png')
+              : require('../../../assets/toggleMenuSunIcon.png')
+          }></Image>
+        <Text
+          style={{...styles.buttons__text, color: isDark ? `#FFF` : `#131313`}}>
+          {isDark ? `Dark theme ` : `Light theme`}
+        </Text>
       </TouchableOpacity>
     </View>
   );

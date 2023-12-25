@@ -7,10 +7,11 @@ import {
   View,
 } from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {storage} from '../utils/storage.ts';
 import {useMutation} from '@apollo/client';
 import {SIGN_IN} from '../apollo/mutations/authMutations.ts';
+import {ThemeContext} from '../context/ThemeContext.tsx';
 
 type FormDataLogin = {
   email: string;
@@ -34,6 +35,8 @@ export const LoginScreen = ({navigation}: any) => {
       password: '',
     },
   });
+
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   const [signIn, {loading, error, data}] = useMutation(SIGN_IN);
 
@@ -70,10 +73,18 @@ export const LoginScreen = ({navigation}: any) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? `#131313` : `#FFF`,
+      }}>
       <View>
         <Text style={styles.title}>Log in</Text>
-        <Text style={styles.subtitle}>
+        <Text
+          style={{
+            ...styles.subtitle,
+            color: isDark ? `#FFF` : `#131313`,
+          }}>
           You will be able to fully communicate
         </Text>
       </View>
@@ -85,13 +96,17 @@ export const LoginScreen = ({navigation}: any) => {
             required: true,
           }}
           render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your e-mail"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
+            <View>
+              <Text style={styles.label}>E-mail</Text>
+              <TextInput
+                style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
+                placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
+                placeholder="Enter your e-mail"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            </View>
           )}
           name="email"
         />
@@ -103,8 +118,10 @@ export const LoginScreen = ({navigation}: any) => {
           }}
           render={({field: {onChange, onBlur, value}}) => (
             <View style={styles.input__wrapper}>
+              <Text style={styles.label}>Password</Text>
               <TextInput
-                style={styles.input}
+                style={{...styles.input, color: isDark ? `#FFF` : `#131313`}}
+                placeholderTextColor={isDark ? `#696969` : `#9B9B9B`}
                 placeholder="Enter your password"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -129,7 +146,7 @@ export const LoginScreen = ({navigation}: any) => {
             onPress={() => {
               navigation.navigate('Registration');
             }}>
-            <Text style={styles.login}>
+            <Text style={{...styles.login, color: isDark ? `#FFF` : `#131313`}}>
               No account?
               <Text style={styles.login__text}> Register</Text>
             </Text>
@@ -218,5 +235,12 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     top: -50,
     right: 0,
+  },
+  label: {
+    color: '#9B9B9B',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '600',
+    marginTop: 16,
   },
 });

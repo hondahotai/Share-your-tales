@@ -12,11 +12,15 @@ import Router from './navigation/Router.tsx';
 import {ApolloProvider} from '@apollo/client';
 import client from './apollo/client.ts';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {ThemeProvider} from './context/ThemeContext.tsx';
+import {MMKV} from 'react-native-mmkv';
 
 function App() {
   return (
     <ApolloProvider client={client}>
-      <Router />
+      <ThemeProvider>
+        <Router />
+      </ThemeProvider>
     </ApolloProvider>
   );
 }

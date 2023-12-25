@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {useQuery} from '@apollo/client';
 import {FAVOURITE} from '../apollo/queries/favouritePosts.ts';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ToggleMenu} from '../components/modules/toggleMenu/toggleMenu.tsx';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
 import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
@@ -23,6 +23,7 @@ import {
   handleNavigationMainScreen,
   handleNavigationMyPostsScreen,
 } from '../utils/handleNavigationBottomMenu.ts';
+import {ThemeContext} from '../context/ThemeContext.tsx';
 
 export const FavoritesScreen = () => {
   const {
@@ -39,6 +40,7 @@ export const FavoritesScreen = () => {
   });
 
   const [isEmpty, setIsEmpty] = useState(false);
+  const {isDark, toggleTheme} = useContext(ThemeContext);
 
   useEffect(() => {
     console.log('Data:', data);
@@ -99,11 +101,19 @@ export const FavoritesScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: isDark ? `#131313` : `#FFF`,
+      }}>
       <View style={styles.heading}>
-        <Text style={styles.heading__text}>{`Hello ${
-          dataUser?.userMe?.firstName ? dataUser.userMe?.firstName : ``
-        }!`}</Text>
+        <Text
+          style={{
+            ...styles.heading__text,
+            color: isDark ? `#FFF` : `#131313`,
+          }}>
+          Favorites
+        </Text>
         <TouchableOpacity onPress={toggleSidebar}>
           <Image
             style={styles.heading__img}
@@ -135,19 +145,37 @@ export const FavoritesScreen = () => {
           <Image
             style={styles.navigation__img}
             source={require('../assets/MainInactive.png')}></Image>
-          <Text style={styles.navigation__text}>Main</Text>
+          <Text
+            style={{
+              ...styles.navigation__text,
+              color: isDark ? `#696969` : `#131313`,
+            }}>
+            Main
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/bookmarkActive.png')}></Image>
-          <Text style={styles.navigation__text}>Favorites</Text>
+          <Text
+            style={{
+              ...styles.navigation__text,
+              color: isDark ? `#B8DE64` : `#131313`,
+            }}>
+            Favorites
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             style={styles.navigation__img}
             source={require('../assets/PostInactive.png')}></Image>
-          <Text style={styles.navigation__text}>My posts</Text>
+          <Text
+            style={{
+              ...styles.navigation__text,
+              color: isDark ? `#696969` : `#131313`,
+            }}>
+            My posts
+          </Text>
         </TouchableOpacity>
       </View>
       <Animated.View
