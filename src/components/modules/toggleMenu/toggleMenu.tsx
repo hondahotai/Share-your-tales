@@ -1,11 +1,20 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useContext} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {storage} from '../../../utils/storage.ts';
 import {ThemeContext} from '../../../context/ThemeContext.tsx';
+import {PostModel, RootStackParamList} from '../../../types/types.ts';
 
-export const ToggleMenu = ({userName, userLastName, userAvatar}: any) => {
-  const navigation = useNavigation<any>();
+interface MenuProps {
+  userName: string;
+  userLastName: string;
+  userAvatar: string;
+}
+
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList, 'Profile'>;
+
+export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const {isDark, toggleTheme} = useContext(ThemeContext);
 

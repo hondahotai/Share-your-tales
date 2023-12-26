@@ -15,12 +15,14 @@ import {POST_DELETE} from '../../../apollo/mutations/postDelete.ts';
 import {LIKE} from '../../../apollo/mutations/likeMutation.ts';
 import {UNLIKE} from '../../../apollo/mutations/unlikeMutation.ts';
 import {ThemeContext} from '../../../context/ThemeContext.tsx';
+import {PostModel} from '../../../types/types.ts';
 
 interface PostItemProps {
-  post: {id: string; title: string};
+  post: PostModel;
   onPress: () => void;
-  onShare: () => void;
-  onDelete: (id: string) => void;
+  share: () => void;
+  isSwipeToDeleteEnabled?: boolean;
+  refetch?: () => void;
 }
 
 export const PostItem = ({
@@ -29,7 +31,7 @@ export const PostItem = ({
   share,
   isSwipeToDeleteEnabled,
   refetch,
-}: any) => {
+}: PostItemProps) => {
   const handleGetDate = () => {
     let date = new Date(post.createdAt);
 
@@ -194,7 +196,7 @@ export const PostItem = ({
       )}
       <Animated.View
         style={animatedStyle}
-        {...(isSwipeToDeleteEnabled ? panResponder.panHandlers : {})}>
+        {...(isSwipeToDeleteEnabled ? panResponder?.panHandlers : {})}>
         <TouchableOpacity onPress={onPress} style={styles.wrapper}>
           <View style={styles.heading}>
             <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>

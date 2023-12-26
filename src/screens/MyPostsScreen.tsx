@@ -25,6 +25,7 @@ import {
 } from '../utils/handleNavigationBottomMenu.ts';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {ThemeContext} from '../context/ThemeContext.tsx';
+import {PostModel} from '../types/types.ts';
 
 export const MyPostsScreen = () => {
   const {
@@ -106,16 +107,12 @@ export const MyPostsScreen = () => {
     navigation.navigate('CreatePost');
   };
 
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState<PostModel>();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const openPostModal = (post: any) => {
+  const openPostModal = (post: PostModel) => {
     setSelectedPost(post);
     setModalVisible(true);
-  };
-
-  const handleDeletePost = ({post}: any) => {
-    console.log(123);
   };
 
   return (
@@ -152,7 +149,6 @@ export const MyPostsScreen = () => {
               post={post}
               onPress={() => openPostModal(post)}
               share={onShare}
-              onDelete={() => handleDeletePost(post.id)}
               isSwipeToDeleteEnabled={true}
               refetch={refetch}
             />

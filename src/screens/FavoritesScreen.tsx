@@ -24,6 +24,7 @@ import {
   handleNavigationMyPostsScreen,
 } from '../utils/handleNavigationBottomMenu.ts';
 import {ThemeContext} from '../context/ThemeContext.tsx';
+import {PostModel} from '../types/types.ts';
 
 export const FavoritesScreen = () => {
   const {
@@ -92,10 +93,10 @@ export const FavoritesScreen = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState<PostModel>();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const openPostModal = (post: any) => {
+  const openPostModal = (post: PostModel) => {
     setSelectedPost(post);
     setModalVisible(true);
   };
@@ -128,7 +129,7 @@ export const FavoritesScreen = () => {
         {isEmpty ? (
           <EmptyPage />
         ) : (
-          data?.favouritePosts?.data.map((post: any, id: number) => (
+          data?.favouritePosts?.data.map((post: PostModel, id: number) => (
             <PostItem
               key={id}
               post={post}

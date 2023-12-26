@@ -24,6 +24,7 @@ import {
 } from '../utils/handleNavigationBottomMenu.ts';
 import {useFocusEffect} from '@react-navigation/native';
 import {ThemeContext} from '../context/ThemeContext.tsx';
+import {PostModel} from '../types/types.ts';
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
@@ -90,10 +91,10 @@ export const MainScreen = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState<PostModel>();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const openPostModal = (post: any) => {
+  const openPostModal = (post: PostModel) => {
     setSelectedPost(post);
     setModalVisible(true);
   };

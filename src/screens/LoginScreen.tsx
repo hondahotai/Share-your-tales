@@ -12,6 +12,8 @@ import {storage} from '../utils/storage.ts';
 import {useMutation} from '@apollo/client';
 import {SIGN_IN} from '../apollo/mutations/authMutations.ts';
 import {ThemeContext} from '../context/ThemeContext.tsx';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../types/types.ts';
 
 type FormDataLogin = {
   email: string;
@@ -23,7 +25,11 @@ type SignInRequest = {
   password: string;
 };
 
-export const LoginScreen = ({navigation}: any) => {
+type ScreenNavigationProp = NavigationProp<RootStackParamList>;
+
+export const LoginScreen = () => {
+  const navigation = useNavigation<ScreenNavigationProp>();
+
   const {
     control,
     handleSubmit,

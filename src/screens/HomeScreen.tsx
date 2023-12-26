@@ -7,8 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../types/types.ts';
 
-export const HomeScreen = ({navigation}: any) => {
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
+
+export const HomeScreen = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   return (
     <View style={styles.container}>
       <ImageBackground

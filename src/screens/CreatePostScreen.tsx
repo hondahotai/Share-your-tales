@@ -16,6 +16,11 @@ import {POST_CREATE} from '../apollo/mutations/postCreate.ts';
 import {handleNavigationMyPostsScreen} from '../utils/handleNavigationBottomMenu.ts';
 import {ThemeContext} from '../context/ThemeContext.tsx';
 
+type FormData = {
+  title: string;
+  post: string;
+};
+
 export const CreatePostScreen = () => {
   const [PostCreate, {loading, error, data}] = useMutation(POST_CREATE);
   const {isDark, toggleTheme} = useContext(ThemeContext);
@@ -25,7 +30,7 @@ export const CreatePostScreen = () => {
     handleSubmit,
     formState: {errors},
     reset,
-  } = useForm({
+  } = useForm<FormData>({
     defaultValues: {
       title: '',
       post: '',
@@ -35,7 +40,7 @@ export const CreatePostScreen = () => {
   const [isUpload, setUpload] = useState(false);
   const [selectImage, setSelectImage] = useState('');
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
     try {
       const response = await PostCreate({
         variables: {

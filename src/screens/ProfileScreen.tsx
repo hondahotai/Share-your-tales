@@ -15,11 +15,12 @@ import {birthValidation} from '../variables/birthValidation.ts';
 import {emailValidation} from '../variables/emailValidation.ts';
 import {phoneValidation} from '../variables/phoneValidation.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {MMKV} from 'react-native-mmkv';
 import {storage} from '../utils/storage.ts';
 import {ThemeContext} from '../context/ThemeContext.tsx';
+import {RootStackParamList} from '../types/types.ts';
 
 type EditProfileRequest = {
   avatarUrl: string;
@@ -32,9 +33,21 @@ type EditProfileRequest = {
   middleName: string;
   phone: string;
 };
+type FormData = {
+  firstName: string;
+  lastName: string;
+  surName: string;
+  gender: string;
+  dateOfBirth: string;
+  email: string;
+  number: string;
+  country: string;
+};
+
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 export const ProfileScreen = () => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
   const [isChangePhoto, setChangePhoto] = useState(false);
@@ -56,7 +69,7 @@ export const ProfileScreen = () => {
     handleSubmit,
     formState: {errors},
     setValue,
-  } = useForm({
+  } = useForm<FormData>({
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -91,7 +104,7 @@ export const ProfileScreen = () => {
     navigation.navigate('Main');
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
     try {
       const response = await UserEditProfile({
         variables: {
@@ -190,6 +203,7 @@ export const ProfileScreen = () => {
       );
       if (response.ok) {
         setSelectImage(null);
+        setChangePhoto(false);
       } else {
         console.log(response.status);
       }

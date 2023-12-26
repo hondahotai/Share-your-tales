@@ -15,6 +15,8 @@ import {SIGN_UP} from '../apollo/mutations/authMutations.ts';
 import {storage} from '../utils/storage.ts';
 import {Success} from '../components/modules/Success/Success.tsx';
 import {ThemeContext} from '../context/ThemeContext.tsx';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../types/types.ts';
 
 type FormData = {
   email: string;
@@ -27,8 +29,13 @@ type SignUpRequest = {
   password: string;
   passwordConfirm: string;
 };
+type HomeScreenNavigationProp = NavigationProp<
+  RootStackParamList,
+  'Registration'
+>;
 
-export const RegistrationScreen = ({navigation}: any) => {
+export const RegistrationScreen = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const {
     control,
     handleSubmit,

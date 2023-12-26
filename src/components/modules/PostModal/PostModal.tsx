@@ -12,8 +12,16 @@ import {POST} from '../../../apollo/queries/PostQueries.ts';
 import {storage} from '../../../utils/storage.ts';
 import {useContext} from 'react';
 import {ThemeContext} from '../../../context/ThemeContext.tsx';
+import {PostModel} from '../../../types/types.ts';
 
-export const PostModal = ({post, visible, onClose, share}: any) => {
+interface PostItemProps {
+  post?: PostModel;
+  visible: boolean;
+  onClose: () => void;
+  share: () => void;
+}
+
+export const PostModal = ({post, visible, onClose, share}: PostItemProps) => {
   const {loading, error, data} = useQuery(POST, {
     variables: {
       input: {
