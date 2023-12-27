@@ -13,17 +13,25 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {storage} from '../utils/storage.ts';
 import {useMutation} from '@apollo/client';
 import {POST_CREATE} from '../apollo/mutations/postCreate.ts';
-import {handleNavigationMyPostsScreen} from '../utils/handleNavigationBottomMenu.ts';
-import {ThemeContext} from '../context/ThemeContext.tsx';
+import {ThemeContext} from '../providers/ThemeContext.tsx';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../types/types.ts';
 
 type FormData = {
   title: string;
   post: string;
 };
 
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
+
 export const CreatePostScreen = () => {
   const [PostCreate, {loading, error, data}] = useMutation(POST_CREATE);
   const {isDark, toggleTheme} = useContext(ThemeContext);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  const handleNavigationMyPostsScreen = () => {
+    navigation.navigate('MyPosts');
+  };
 
   const {
     control,
@@ -189,15 +197,16 @@ export const CreatePostScreen = () => {
           <Image
             source={
               isDark
-                ? require('../assets/buttonBlackArrowSecond.png')
-                : require('../assets/ArrowLeftButtonBack.png')
+                ? require('../assets/images/buttonBlackArrowSecond.png')
+                : require('../assets/images/ArrowLeftButtonBack.png')
             }></Image>
         </TouchableOpacity>
         <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
           Create post
         </Text>
         <TouchableOpacity onPress={handleReset}>
-          <Image source={require('../assets/ButtoncrossWhite.png')}></Image>
+          <Image
+            source={require('../assets/images/ButtoncrossWhite.png')}></Image>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -211,7 +220,7 @@ export const CreatePostScreen = () => {
           ) : (
             <Image
               style={styles.upload}
-              source={require('../assets/heroicons-solid-cloud-arrow-upW.png')}></Image>
+              source={require('../assets/images/heroicons-solid-cloud-arrow-upW.png')}></Image>
           )}
 
           {!selectImage && (

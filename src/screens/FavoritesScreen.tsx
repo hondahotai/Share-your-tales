@@ -11,20 +11,21 @@ import {
 import {useQuery} from '@apollo/client';
 import {FAVOURITE} from '../apollo/queries/favouritePosts.ts';
 import React, {useContext, useEffect, useState} from 'react';
-import {ToggleMenu} from '../components/modules/toggleMenu/toggleMenu.tsx';
+import {ToggleMenu} from '../components/toggleMenu/toggleMenu.tsx';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
-import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
+import {PostItem} from '../components/PostItem/PostItem.tsx';
 import {onShare} from '../utils/shareUtils.ts';
-import {PostModal} from '../components/modules/PostModal/PostModal.tsx';
-import {EmptyPage} from '../components/modules/EmptyPage/EmptyPage.tsx';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {PostModal} from '../components/PostModal/PostModal.tsx';
+import {EmptyPage} from '../components/EmptyPage/EmptyPage.tsx';
 import {
-  handleNavigationFavoritesScreen,
-  handleNavigationMainScreen,
-  handleNavigationMyPostsScreen,
-} from '../utils/handleNavigationBottomMenu.ts';
-import {ThemeContext} from '../context/ThemeContext.tsx';
-import {PostModel} from '../types/types.ts';
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import {ThemeContext} from '../providers/ThemeContext.tsx';
+import {PostModel, RootStackParamList} from '../types/types.ts';
+
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 export const FavoritesScreen = () => {
   const {
@@ -42,6 +43,7 @@ export const FavoritesScreen = () => {
 
   const [isEmpty, setIsEmpty] = useState(false);
   const {isDark, toggleTheme} = useContext(ThemeContext);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
     console.log('Data:', data);
@@ -101,6 +103,16 @@ export const FavoritesScreen = () => {
     setModalVisible(true);
   };
 
+  const handleNavigationMainScreen = () => {
+    navigation.navigate('Main');
+  };
+  const handleNavigationFavoritesScreen = () => {
+    navigation.navigate('Favorites');
+  };
+  const handleNavigationMyPostsScreen = () => {
+    navigation.navigate('MyPosts');
+  };
+
   return (
     <View
       style={{
@@ -121,7 +133,7 @@ export const FavoritesScreen = () => {
             source={
               dataUser?.userMe.avatarUrl
                 ? {uri: dataUser.userMe.avatarUrl}
-                : require('../assets/StateEmptyUserSmall.png')
+                : require('../assets/images/StateEmptyUserSmall.png')
             }></Image>
         </TouchableOpacity>
       </View>
@@ -145,7 +157,7 @@ export const FavoritesScreen = () => {
           onPress={handleNavigationMainScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/MainInactive.png')}></Image>
+            source={require('../assets/images/MainInactive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -157,7 +169,7 @@ export const FavoritesScreen = () => {
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/bookmarkActive.png')}></Image>
+            source={require('../assets/images/bookmarkActive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -169,7 +181,7 @@ export const FavoritesScreen = () => {
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/PostInactive.png')}></Image>
+            source={require('../assets/images/PostInactive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,

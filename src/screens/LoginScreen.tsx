@@ -11,7 +11,7 @@ import React, {useContext, useState} from 'react';
 import {storage} from '../utils/storage.ts';
 import {useMutation} from '@apollo/client';
 import {SIGN_IN} from '../apollo/mutations/authMutations.ts';
-import {ThemeContext} from '../context/ThemeContext.tsx';
+import {ThemeContext} from '../providers/ThemeContext.tsx';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../types/types.ts';
 
@@ -137,7 +137,7 @@ export const LoginScreen = () => {
               <TouchableOpacity
                 onPress={() => setShowPassword(!isShowPassword)}>
                 <Image
-                  source={require('../assets/heroicons-mini-eye.png')}
+                  source={require('../assets/images/heroicons-mini-eye.png')}
                   style={styles.icon}></Image>
               </TouchableOpacity>
             </View>

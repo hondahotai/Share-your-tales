@@ -10,21 +10,22 @@ import {
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import {PostItem} from '../components/modules/PostItem/PostItem.tsx';
+import {PostItem} from '../components/PostItem/PostItem.tsx';
 import {useQuery} from '@apollo/client';
 import {POSTS} from '../apollo/queries/postsQueries.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
-import {ToggleMenu} from '../components/modules/toggleMenu/toggleMenu.tsx';
-import {PostModal} from '../components/modules/PostModal/PostModal.tsx';
+import {ToggleMenu} from '../components/toggleMenu/toggleMenu.tsx';
+import {PostModal} from '../components/PostModal/PostModal.tsx';
 import {onShare} from '../utils/shareUtils.ts';
 import {
-  handleNavigationFavoritesScreen,
-  handleNavigationMainScreen,
-  handleNavigationMyPostsScreen,
-} from '../utils/handleNavigationBottomMenu.ts';
-import {useFocusEffect} from '@react-navigation/native';
-import {ThemeContext} from '../context/ThemeContext.tsx';
-import {PostModel} from '../types/types.ts';
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import {ThemeContext} from '../providers/ThemeContext.tsx';
+import {PostModel, RootStackParamList} from '../types/types.ts';
+
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 export const MainScreen = () => {
   const [isTabActive, setTabActive] = useState(true);
@@ -59,6 +60,8 @@ export const MainScreen = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const sidebarPosition = useState(new Animated.Value(-288))[0];
   const [overlayOpacity] = useState(new Animated.Value(0));
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const toggleSidebar = () => {
     if (sidebarVisible) {
@@ -99,6 +102,16 @@ export const MainScreen = () => {
     setModalVisible(true);
   };
 
+  const handleNavigationMainScreen = () => {
+    navigation.navigate('Main');
+  };
+  const handleNavigationFavoritesScreen = () => {
+    navigation.navigate('Favorites');
+  };
+  const handleNavigationMyPostsScreen = () => {
+    navigation.navigate('MyPosts');
+  };
+
   return (
     <View
       style={{
@@ -119,7 +132,7 @@ export const MainScreen = () => {
             source={
               dataUser?.userMe.avatarUrl
                 ? {uri: dataUser.userMe.avatarUrl}
-                : require('../assets/StateEmptyUserSmall.png')
+                : require('../assets/images/StateEmptyUserSmall.png')
             }></Image>
         </TouchableOpacity>
       </View>
@@ -161,7 +174,7 @@ export const MainScreen = () => {
           onPress={handleNavigationMainScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/MainActive.png')}></Image>
+            source={require('../assets/images/MainActive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -173,7 +186,7 @@ export const MainScreen = () => {
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/bookmarkInActive.png')}></Image>
+            source={require('../assets/images/bookmarkInActive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -185,7 +198,7 @@ export const MainScreen = () => {
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/PostInactive.png')}></Image>
+            source={require('../assets/images/PostInactive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,

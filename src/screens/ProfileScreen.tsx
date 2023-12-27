@@ -11,15 +11,15 @@ import {useMutation, useQuery} from '@apollo/client';
 import {PROFILE_EDIT} from '../apollo/mutations/profileMutations.ts';
 import {Controller, useForm} from 'react-hook-form';
 import {useContext, useEffect, useState} from 'react';
-import {birthValidation} from '../variables/birthValidation.ts';
-import {emailValidation} from '../variables/emailValidation.ts';
-import {phoneValidation} from '../variables/phoneValidation.ts';
+import {birthValidation} from '../services/birthValidation.ts';
+import {emailValidation} from '../services/emailValidation.ts';
+import {phoneValidation} from '../services/phoneValidation.ts';
 import {USER_ME} from '../apollo/queries/userQueries.ts';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {MMKV} from 'react-native-mmkv';
 import {storage} from '../utils/storage.ts';
-import {ThemeContext} from '../context/ThemeContext.tsx';
+import {ThemeContext} from '../providers/ThemeContext.tsx';
 import {RootStackParamList} from '../types/types.ts';
 
 type EditProfileRequest = {
@@ -278,8 +278,8 @@ export const ProfileScreen = () => {
           <Image
             source={
               isDark
-                ? require('../assets/buttonBlackArrowSecond.png')
-                : require('../assets/ArrowLeftButtonBack.png')
+                ? require('../assets/images/buttonBlackArrowSecond.png')
+                : require('../assets/images/ArrowLeftButtonBack.png')
             }></Image>
         </TouchableOpacity>
         <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
@@ -301,15 +301,15 @@ export const ProfileScreen = () => {
               source={
                 selectImage
                   ? {uri: selectImage}
-                  : require('../assets/StateEmptyUserBig.png')
+                  : require('../assets/images/StateEmptyUserBig.png')
               }
               style={styles.photo__image}></Image>
             <Image
               style={styles.photo__icon}
               source={
                 isDark
-                  ? require('../assets/DMButtonPhotoBlack.png')
-                  : require('../assets/DMButtonPhoto.png')
+                  ? require('../assets/images/DMButtonPhotoBlack.png')
+                  : require('../assets/images/DMButtonPhoto.png')
               }></Image>
           </TouchableOpacity>
         </View>

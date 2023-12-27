@@ -1,9 +1,9 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useContext} from 'react';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {storage} from '../../../utils/storage.ts';
-import {ThemeContext} from '../../../context/ThemeContext.tsx';
-import {PostModel, RootStackParamList} from '../../../types/types.ts';
+import {storage} from '../../utils/storage.ts';
+import {ThemeContext} from '../../providers/ThemeContext.tsx';
+import {PostModel, RootStackParamList} from '../../types/types.ts';
 
 interface MenuProps {
   userName: string;
@@ -33,7 +33,7 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
         source={
           userAvatar
             ? {uri: userAvatar}
-            : require('../../../assets/StateEmptyUserMedium.png')
+            : require('../../assets/images/StateEmptyUserMedium.png')
         }
         style={styles.image}></Image>
       <Text style={{...styles.userData, color: isDark ? `#FFF` : `black`}}>
@@ -51,8 +51,8 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
         <Image
           source={
             isDark
-              ? require('../../../assets/toggleMenyUserWhiteIcon.png')
-              : require('../../../assets/toggleMenuUserIcon.png')
+              ? require('../../assets/images/toggleMenyUserWhiteIcon.png')
+              : require('../../assets/images/toggleMenuUserIcon.png')
           }></Image>
         <Text
           style={{...styles.buttons__text, color: isDark ? `#FFF` : `#131313`}}>
@@ -63,8 +63,8 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
         <Image
           source={
             isDark
-              ? require('../../../assets/toggleMenyExitWhiteIcon.png')
-              : require('../../../assets/toggleMenuExitIcon.png')
+              ? require('../../assets/images/toggleMenyExitWhiteIcon.png')
+              : require('../../assets/images/toggleMenuExitIcon.png')
           }></Image>
         <Text
           style={{...styles.buttons__text, color: isDark ? `#FFF` : `#131313`}}>
@@ -75,8 +75,8 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
         <Image
           source={
             isDark
-              ? require('../../../assets/toggleMenuMoonIcon.png')
-              : require('../../../assets/toggleMenuSunIcon.png')
+              ? require('../../assets/images/toggleMenuMoonIcon.png')
+              : require('../../assets/images/toggleMenuSunIcon.png')
           }></Image>
         <Text
           style={{...styles.buttons__text, color: isDark ? `#FFF` : `#131313`}}>

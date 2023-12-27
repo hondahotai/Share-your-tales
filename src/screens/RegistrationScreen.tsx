@@ -13,8 +13,8 @@ import React, {useContext, useState} from 'react';
 import {useMutation} from '@apollo/client';
 import {SIGN_UP} from '../apollo/mutations/authMutations.ts';
 import {storage} from '../utils/storage.ts';
-import {Success} from '../components/modules/Success/Success.tsx';
-import {ThemeContext} from '../context/ThemeContext.tsx';
+import {Success} from '../components/Success/Success.tsx';
+import {ThemeContext} from '../providers/ThemeContext.tsx';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../types/types.ts';
 
@@ -156,7 +156,7 @@ export const RegistrationScreen = () => {
                   <TouchableOpacity
                     onPress={() => setShowPassword(!isShowPassword)}>
                     <Image
-                      source={require('../assets/heroicons-mini-eye.png')}
+                      source={require('../assets/images/heroicons-mini-eye.png')}
                       style={styles.icon}></Image>
                   </TouchableOpacity>
                 </View>
@@ -189,7 +189,7 @@ export const RegistrationScreen = () => {
                   <TouchableOpacity
                     onPress={() => setShowPassword(!isShowPassword)}>
                     <Image
-                      source={require('../assets/heroicons-mini-eye.png')}
+                      source={require('../assets/images/heroicons-mini-eye.png')}
                       style={styles.icon}></Image>
                   </TouchableOpacity>
                 </View>

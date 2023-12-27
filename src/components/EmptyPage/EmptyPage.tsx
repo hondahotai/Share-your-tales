@@ -1,7 +1,7 @@
 import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigationState} from '@react-navigation/native';
 import {useContext, useEffect, useState} from 'react';
-import {ThemeContext} from '../../../context/ThemeContext.tsx';
+import {ThemeContext} from '../../providers/ThemeContext.tsx';
 
 export const EmptyPage = () => {
   const currentRoute = useNavigationState(
@@ -26,8 +26,8 @@ export const EmptyPage = () => {
         style={styles.image}
         source={
           isDark
-            ? require('../../../assets/upsFrameBlack.png')
-            : require('../../../assets/upsFrame.png')
+            ? require('../../assets/images/upsFrameBlack.png')
+            : require('../../assets/images/upsFrame.png')
         }></Image>
       <Text style={{...styles.text, color: isDark ? `#696969` : `#131313`}}>
         {text}

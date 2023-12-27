@@ -1,15 +1,18 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../types/types.ts';
+
+type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 export const Success = () => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   return (
     <View style={styles.container__success}>
-      <Image source={require('../../../assets/success.png')}></Image>
+      <Image source={require('../../assets/images/success.png')}></Image>
       <View style={styles.text__success}>
         <Image
-          source={require('../../../assets/outline-check-circle.png')}
+          source={require('../../assets/images/outline-check-circle.png')}
           style={styles.image__success}></Image>
         <Text>You have been registered</Text>
       </View>

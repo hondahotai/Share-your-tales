@@ -8,14 +8,14 @@ import {
   Animated,
   PanResponder,
 } from 'react-native';
-import {storage} from '../../../utils/storage.ts';
+import {storage} from '../../utils/storage.ts';
 import {useContext, useRef, useState} from 'react';
 import {useMutation} from '@apollo/client';
-import {POST_DELETE} from '../../../apollo/mutations/postDelete.ts';
-import {LIKE} from '../../../apollo/mutations/likeMutation.ts';
-import {UNLIKE} from '../../../apollo/mutations/unlikeMutation.ts';
-import {ThemeContext} from '../../../context/ThemeContext.tsx';
-import {PostModel} from '../../../types/types.ts';
+import {POST_DELETE} from '../../apollo/mutations/postDelete.ts';
+import {LIKE} from '../../apollo/mutations/likeMutation.ts';
+import {UNLIKE} from '../../apollo/mutations/unlikeMutation.ts';
+import {ThemeContext} from '../../providers/ThemeContext.tsx';
+import {PostModel} from '../../types/types.ts';
 
 interface PostItemProps {
   post: PostModel;
@@ -189,7 +189,7 @@ export const PostItem = ({
           <TouchableOpacity onPress={handleDeletePost}>
             <Image
               style={styles.delete__image}
-              source={require('../../../assets/solid-trash.png')}></Image>
+              source={require('../../assets/images/solid-trash.png')}></Image>
             <Text style={styles.delete__text}>Delete</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -212,7 +212,7 @@ export const PostItem = ({
                 source={
                   post.author.avatarUrl
                     ? {uri: post.author.avatarUrl}
-                    : require('../../../assets/StateEmptyUserSmall.png')
+                    : require('../../assets/images/StateEmptyUserSmall.png')
                 }></Image>
               <Text style={styles.user__name}>{handleGetUserName()}</Text>
             </View>
@@ -221,7 +221,7 @@ export const PostItem = ({
                 style={styles.info__like}
                 onPress={handleLikeButton}>
                 <Image
-                  source={require('../../../assets/unlikedButtonHeart.png')}></Image>
+                  source={require('../../assets/images/unlikedButtonHeart.png')}></Image>
                 <Text
                   style={{
                     ...styles.info__count,
@@ -234,8 +234,8 @@ export const PostItem = ({
                 <Image
                   source={
                     isDark
-                      ? require('../../../assets/shareWhite.png')
-                      : require('../../../assets/share.png')
+                      ? require('../../assets/images/shareWhite.png')
+                      : require('../../assets/images/share.png')
                   }></Image>
               </TouchableOpacity>
             </View>

@@ -18,7 +18,7 @@ export const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require(`../assets/splashScreen.png`)}
+        source={require(`../assets/images/splashScreen.png`)}
         style={styles.background}>
         <TouchableOpacity
           onPress={() => {

@@ -8,11 +8,11 @@ import {
   View,
 } from 'react-native';
 import {useQuery} from '@apollo/client';
-import {POST} from '../../../apollo/queries/PostQueries.ts';
-import {storage} from '../../../utils/storage.ts';
+import {POST} from '../../apollo/queries/PostQueries.ts';
+import {storage} from '../../utils/storage.ts';
 import {useContext} from 'react';
-import {ThemeContext} from '../../../context/ThemeContext.tsx';
-import {PostModel} from '../../../types/types.ts';
+import {ThemeContext} from '../../providers/ThemeContext.tsx';
+import {PostModel} from '../../types/types.ts';
 
 interface PostItemProps {
   post?: PostModel;
@@ -65,8 +65,8 @@ export const PostModal = ({post, visible, onClose, share}: PostItemProps) => {
               style={styles.close}
               source={
                 isDark
-                  ? require('../../../assets/buttonBlackArrowSecond.png')
-                  : require('../../../assets/ArrowLeftButtonBack.png')
+                  ? require('../../assets/images/buttonBlackArrowSecond.png')
+                  : require('../../assets/images/ArrowLeftButtonBack.png')
               }></Image>
           </TouchableOpacity>
           <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
@@ -82,7 +82,7 @@ export const PostModal = ({post, visible, onClose, share}: PostItemProps) => {
             source={
               post
                 ? {uri: data?.post.mediaUrl}
-                : require('../../../assets/StateEmptyUserMedium.png')
+                : require('../../assets/images/StateEmptyUserMedium.png')
             }></Image>
           <Text
             style={{
@@ -104,7 +104,7 @@ export const PostModal = ({post, visible, onClose, share}: PostItemProps) => {
             source={
               post?.author.avatarUrl
                 ? {uri: post.author.avatarUrl}
-                : require('../../../assets/StateEmptyUserSmall.png')
+                : require('../../assets/images/StateEmptyUserSmall.png')
             }></Image>
           <Text style={styles.user__name}>
             {post && storage.getString(`${post.id}User`)
@@ -115,7 +115,7 @@ export const PostModal = ({post, visible, onClose, share}: PostItemProps) => {
         <View style={styles.info__btns}>
           <TouchableOpacity style={styles.info__like}>
             <Image
-              source={require('../../../assets/unlikedButtonHeart.png')}></Image>
+              source={require('../../assets/images/unlikedButtonHeart.png')}></Image>
             <Text
               style={{
                 ...styles.info__count,
@@ -128,8 +128,8 @@ export const PostModal = ({post, visible, onClose, share}: PostItemProps) => {
             <Image
               source={
                 isDark
-                  ? require('../../../assets/shareWhite.png')
-                  : require('../../../assets/share.png')
+                  ? require('../../assets/images/shareWhite.png')
+                  : require('../../assets/images/share.png')
               }></Image>
           </TouchableOpacity>
         </View>

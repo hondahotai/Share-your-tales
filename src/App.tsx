@@ -12,7 +12,7 @@ import Router from './navigation/Router.tsx';
 import {ApolloProvider} from '@apollo/client';
 import client from './apollo/client.ts';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {ThemeProvider} from './context/ThemeContext.tsx';
+import {ThemeProvider} from './providers/ThemeContext.tsx';
 import {MMKV} from 'react-native-mmkv';
 
 function App() {
