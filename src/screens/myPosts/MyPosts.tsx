@@ -9,31 +9,33 @@ import {
   View,
 } from 'react-native';
 import {useQuery} from '@apollo/client';
-import {FAVOURITE} from '../apollo/queries/favouritePosts.ts';
+import {USER_ME} from '../../api/queries/userQueries.ts';
+import {MY_POSTS} from '../../api/queries/myPosts.ts';
 import React, {useContext, useEffect, useState} from 'react';
-import {ToggleMenu} from '../components/toggleMenu/toggleMenu.tsx';
-import {USER_ME} from '../apollo/queries/userQueries.ts';
-import {PostItem} from '../components/PostItem/PostItem.tsx';
-import {onShare} from '../utils/shareUtils.ts';
-import {PostModal} from '../components/PostModal/PostModal.tsx';
-import {EmptyPage} from '../components/EmptyPage/EmptyPage.tsx';
+import EmptyPage from '../../components/EmptyPage';
+import PostItem from '../../components/PostItem';
+import {onShare} from '../../utils/shareUtils.ts';
+import ToggleMenu from '../../components/toggleMenu';
+import PostModal from '../../components/PostModal';
+import {styles} from '../favorites';
 import {
   NavigationProp,
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import {ThemeContext} from '../providers/ThemeContext.tsx';
-import {PostModel, RootStackParamList} from '../types/types.ts';
+import {ThemeContext} from '../../providers/ThemeContext.tsx';
+import {PostModel, RootStackParamList} from '../../types.ts';
+import {style} from './styles.ts';
 
 type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-export const FavoritesScreen = () => {
+const MyPosts = () => {
   const {
     loading: loadingUser,
     error: errorUser,
     data: dataUser,
   } = useQuery(USER_ME);
-  const {refetch, loading, error, data} = useQuery(FAVOURITE, {
+  const {refetch, loading, error, data} = useQuery(MY_POSTS, {
     variables: {
       input: {
         limit: 8,
@@ -42,15 +44,23 @@ export const FavoritesScreen = () => {
   });
 
   const [isEmpty, setIsEmpty] = useState(false);
-  const {isDark, toggleTheme} = useContext(ThemeContext);
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
+  const {isDark, toggleTheme} = useContext(ThemeContext);
+
   useEffect(() => {
+    if (loading) {
+      console.log('Запрос выполняется...');
+    }
+
+    if (error) {
+      console.error('Ошибка запроса:', error);
+    }
     console.log('Data:', data);
-    if (data && data?.favouritePosts.data.length === 0) {
-      setIsEmpty(true);
-    } else {
+    if (data?.myPosts?.data.length > 0) {
       setIsEmpty(false);
+    } else {
+      setIsEmpty(true);
     }
   }, [data, setIsEmpty]);
 
@@ -95,6 +105,10 @@ export const FavoritesScreen = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const handleNavigationCreatePostScreen = () => {
+    navigation.navigate('CreatePost');
+  };
+
   const [selectedPost, setSelectedPost] = useState<PostModel>();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -125,7 +139,7 @@ export const FavoritesScreen = () => {
             ...styles.heading__text,
             color: isDark ? `#FFF` : `#131313`,
           }}>
-          Favorites
+          My posts
         </Text>
         <TouchableOpacity onPress={toggleSidebar}>
           <Image
@@ -133,7 +147,7 @@ export const FavoritesScreen = () => {
             source={
               dataUser?.userMe.avatarUrl
                 ? {uri: dataUser.userMe.avatarUrl}
-                : require('../assets/images/StateEmptyUserSmall.png')
+                : require('../../assets/images/StateEmptyUserSmall.png')
             }></Image>
         </TouchableOpacity>
       </View>
@@ -141,12 +155,14 @@ export const FavoritesScreen = () => {
         {isEmpty ? (
           <EmptyPage />
         ) : (
-          data?.favouritePosts?.data.map((post: PostModel, id: number) => (
+          data?.myPosts?.data.map((post: any, id: number) => (
             <PostItem
               key={id}
               post={post}
               onPress={() => openPostModal(post)}
               share={onShare}
+              isSwipeToDeleteEnabled={true}
+              refetch={refetch}
             />
           ))
         )}
@@ -157,7 +173,7 @@ export const FavoritesScreen = () => {
           onPress={handleNavigationMainScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/images/MainInactive.png')}></Image>
+            source={require('../../assets/images/MainInactive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -169,11 +185,11 @@ export const FavoritesScreen = () => {
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/images/bookmarkActive.png')}></Image>
+            source={require('../../assets/images/bookmarkInActive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
-              color: isDark ? `#B8DE64` : `#131313`,
+              color: isDark ? `#696969` : `#131313`,
             }}>
             Favorites
           </Text>
@@ -181,14 +197,24 @@ export const FavoritesScreen = () => {
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../assets/images/PostInactive.png')}></Image>
+            source={require('../../assets/images/PostActive.png')}></Image>
           <Text
             style={{
               ...styles.navigation__text,
-              color: isDark ? `#696969` : `#131313`,
+              color: isDark ? `#B8DE64` : `#131313`,
             }}>
             My posts
           </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={style.create}
+          onPress={handleNavigationCreatePostScreen}>
+          <Image
+            source={
+              isDark
+                ? require('../../assets/images/CreateButtonPlusBlack.png')
+                : require('../../assets/images/CreateButtonPlusWhite.png')
+            }></Image>
         </TouchableOpacity>
       </View>
       <Animated.View
@@ -221,63 +247,4 @@ export const FavoritesScreen = () => {
   );
 };
 
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF',
-  },
-  heading: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 20,
-  },
-  heading__text: {
-    fontSize: 32,
-    color: '#131313',
-    fontWeight: '500',
-    fontStyle: 'normal',
-  },
-  heading__img: {
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-  },
-  sidebar: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: 288,
-    backgroundColor: '#fff',
-    zIndex: 1,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: -1,
-  },
-  navigation: {
-    width: 375,
-    height: 100,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  navigation__inner: {
-    width: 61,
-    height: 'auto',
-  },
-  navigation__img: {
-    alignSelf: 'center',
-  },
-  navigation__text: {
-    textAlign: 'center',
-    alignSelf: 'center',
-  },
-});
+export default MyPosts;

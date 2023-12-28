@@ -4,49 +4,28 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  StyleSheet,
   TextInput,
 } from 'react-native';
 import {useMutation, useQuery} from '@apollo/client';
-import {PROFILE_EDIT} from '../apollo/mutations/profileMutations.ts';
+import {PROFILE_EDIT} from '../../api/mutations/profileMutations.ts';
 import {Controller, useForm} from 'react-hook-form';
 import {useContext, useEffect, useState} from 'react';
-import {birthValidation} from '../services/birthValidation.ts';
-import {emailValidation} from '../services/emailValidation.ts';
-import {phoneValidation} from '../services/phoneValidation.ts';
-import {USER_ME} from '../apollo/queries/userQueries.ts';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {birthValidation} from '../../services/birthValidation.ts';
+import {emailValidation} from '../../services/emailValidation.ts';
+import {USER_ME} from '../../api/queries/userQueries.ts';
+import {useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {MMKV} from 'react-native-mmkv';
-import {storage} from '../utils/storage.ts';
-import {ThemeContext} from '../providers/ThemeContext.tsx';
-import {RootStackParamList} from '../types/types.ts';
+import {ThemeContext} from '../../providers/ThemeContext.tsx';
+import {styles} from './styles.ts';
+import {FormData} from './types.ts';
+import {HomeScreenNavigationProp} from './types.ts';
+import getCleanUrl from './hooks/getCleanUrl.ts';
+import uploadFileToS3 from './hooks/uploadFileToS3.ts';
+import getSignedUrl from './hooks/getSignedUrl.ts';
+import {useDeletePhoto} from './hooks/handleDeletePhoto.ts';
+import AvatarPicker from '../../components/AvatarPicker';
 
-type EditProfileRequest = {
-  avatarUrl: string;
-  birthDate: string;
-  country: string;
-  email: string;
-  firstName: string;
-  gender: string;
-  lastName: string;
-  middleName: string;
-  phone: string;
-};
-type FormData = {
-  firstName: string;
-  lastName: string;
-  surName: string;
-  gender: string;
-  dateOfBirth: string;
-  email: string;
-  number: string;
-  country: string;
-};
-
-type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
-
-export const ProfileScreen = () => {
+const Profile = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
@@ -186,86 +165,11 @@ export const ProfileScreen = () => {
     }
   };
 
-  const handleDeletePhoto = async () => {
-    const apiUrl =
-      'https://internship-social-media.purrweb.com/v1/aws/delete-s3-file';
-    try {
-      const response = await fetch(
-        `${apiUrl}?fileCategory=AVATARS&fileKey=${encodeURIComponent(
-          selectImage,
-        )}`,
-        {
-          method: 'DELETE',
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (response.ok) {
-        setSelectImage(null);
-        setChangePhoto(false);
-      } else {
-        console.log(response.status);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const token = storage.getString('userToken');
-
-  const getSignedUrl = async (fileName: any, fileCategory: any) => {
-    const apiUrl =
-      'https://internship-social-media.purrweb.com/v1/aws/signed-url';
-
-    try {
-      const response = await fetch(
-        `${apiUrl}?fileName=${encodeURIComponent(
-          fileName,
-        )}&fileCategory=${encodeURIComponent(fileCategory)}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (response.ok) {
-        return response.text();
-      }
-    } catch (error) {
-      console.error('Error getting signed URL:', error);
-      throw error;
-    }
-  };
-
-  const uploadFileToS3 = async (fileUri: any, signedUrl: any) => {
-    try {
-      const file = await fetch(fileUri);
-      const blob = await file.blob();
-
-      const response = await fetch(signedUrl, {
-        method: 'PUT',
-        body: blob,
-        headers: {
-          'Content-Type': 'image/png',
-        },
-      });
-
-      if (!response.ok) {
-        new Error('Failed to upload image to S3');
-      }
-    } catch (error) {
-      console.error('Error uploading image to S3:', error);
-      throw error;
-    }
-  };
-
-  const getCleanUrl = (signedUrl: any) => {
-    return signedUrl.split('?')[0];
-  };
+  const handleDeletePhoto = useDeletePhoto(
+    selectImage,
+    setSelectImage,
+    setChangePhoto,
+  );
 
   return (
     <View
@@ -278,8 +182,8 @@ export const ProfileScreen = () => {
           <Image
             source={
               isDark
-                ? require('../assets/images/buttonBlackArrowSecond.png')
-                : require('../assets/images/ArrowLeftButtonBack.png')
+                ? require('../../assets/images/buttonBlackArrowSecond.png')
+                : require('../../assets/images/ArrowLeftButtonBack.png')
             }></Image>
         </TouchableOpacity>
         <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
@@ -301,15 +205,15 @@ export const ProfileScreen = () => {
               source={
                 selectImage
                   ? {uri: selectImage}
-                  : require('../assets/images/StateEmptyUserBig.png')
+                  : require('../../assets/images/StateEmptyUserBig.png')
               }
               style={styles.photo__image}></Image>
             <Image
               style={styles.photo__icon}
               source={
                 isDark
-                  ? require('../assets/images/DMButtonPhotoBlack.png')
-                  : require('../assets/images/DMButtonPhoto.png')
+                  ? require('../../assets/images/DMButtonPhotoBlack.png')
+                  : require('../../assets/images/DMButtonPhoto.png')
               }></Image>
           </TouchableOpacity>
         </View>
@@ -561,214 +465,15 @@ export const ProfileScreen = () => {
         </View>
       </ScrollView>
       {isChangePhoto && (
-        <View style={styles.overlay}>
-          <View style={styles.photo__change}>
-            <TouchableOpacity
-              style={{
-                ...styles.item__change,
-                backgroundColor: isDark ? `#131313` : `#FFF`,
-              }}
-              onPress={handleCameraLaunch}>
-              <Text style={styles.item__text}>Take a photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                ...styles.item__changeBorder,
-                backgroundColor: isDark ? `#131313` : `#FFF`,
-              }}
-              onPress={handleLibraryLaunch}>
-              <Text style={styles.item__text}>Choose from the library</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                ...styles.item__change,
-                backgroundColor: isDark ? `#131313` : `#FFF`,
-              }}
-              onPress={handleDeletePhoto}>
-              <Text style={styles.item__textRed}>Delete photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                ...styles.item__cancel,
-                backgroundColor: isDark ? `#131313` : `#FFF`,
-              }}
-              onPress={() => setChangePhoto(false)}>
-              <Text style={styles.item__text}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <AvatarPicker
+          handleCameraLaunch={handleCameraLaunch}
+          handleLibraryLaunch={handleLibraryLaunch}
+          handleDeletePhoto={handleDeletePhoto}
+          setChangePhoto={setChangePhoto}
+        />
       )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    backgroundColor: '#FFF',
-    position: 'relative',
-    zIndex: 10,
-  },
-  heading: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontStyle: 'normal',
-    fontWeight: '600',
-    color: '#131313',
-  },
-  submit: {
-    color: 'rgba(135, 183, 31, 1)',
-    fontSize: 16,
-    fontStyle: 'normal',
-    fontWeight: '500',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(135, 183, 31, 1)',
-  },
-  photo__wrapper: {
-    alignSelf: 'center',
-    position: 'relative',
-  },
-  photo__image: {
-    width: 160,
-    height: 160,
-    borderRadius: 100,
-  },
-
-  photo__icon: {
-    position: 'absolute',
-    top: 120,
-    right: 0,
-  },
-  title__profile: {
-    fontSize: 18,
-    fontStyle: 'normal',
-    fontWeight: '500',
-    color: '#131313',
-    marginTop: 32,
-  },
-  label: {
-    color: '#9B9B9B',
-    fontSize: 14,
-    fontStyle: 'normal',
-    fontWeight: '600',
-    marginTop: 16,
-  },
-  input: {
-    fontSize: 16,
-    fontStyle: 'normal',
-    fontWeight: '400',
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#9B9B9B',
-  },
-  gender__wrapper: {
-    marginTop: 16,
-  },
-  choice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    justifyContent: 'flex-start',
-  },
-  outerCircle: {
-    height: 24,
-    width: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  innerCircle: {
-    height: 12,
-    width: 12,
-    borderRadius: 6,
-    backgroundColor: '#000',
-  },
-  label__gender: {
-    fontSize: 16,
-    fontStyle: 'normal',
-    fontWeight: '400',
-    color: '#131313',
-  },
-  error: {
-    color: 'rgb(201,16,16)',
-  },
-  scroll: {
-    marginBottom: 16,
-    position: 'relative',
-  },
-  photo__change: {
-    position: 'absolute',
-    width: 343,
-    height: 200,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 32,
-    zIndex: 1000,
-    borderRadius: 20,
-    bottom: '0%',
-    alignSelf: 'center',
-  },
-  item__change: {
-    backgroundColor: '#FFF',
-    paddingHorizontal: 10,
-    paddingTop: 12,
-    textAlign: 'center',
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  item__changeBorder: {
-    backgroundColor: '#FFF',
-    paddingHorizontal: 10,
-    paddingTop: 12,
-    textAlign: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(155, 155, 155, 1),',
-    borderRadius: 20,
-  },
-  item__text: {
-    color: 'rgba(135, 183, 31, 1)',
-    fontSize: 16,
-    fontStyle: 'normal',
-    fontWeight: '500',
-    flex: 1,
-    alignItems: 'center',
-  },
-  item__textRed: {
-    color: 'rgba(194, 83, 76, 1)',
-    fontSize: 16,
-    fontStyle: 'normal',
-    fontWeight: '500',
-    flex: 1,
-    alignItems: 'center',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 10,
-    flex: 1,
-  },
-  item__cancel: {
-    backgroundColor: '#FFF',
-    paddingHorizontal: 10,
-    paddingTop: 12,
-    textAlign: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    marginTop: 10,
-  },
-});
+export default Profile;

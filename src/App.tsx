@@ -6,14 +6,10 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
 import Router from './navigation/Router.tsx';
 import {ApolloProvider} from '@apollo/client';
-import client from './apollo/client.ts';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import client from './libs/apollo/client.ts';
 import {ThemeProvider} from './providers/ThemeContext.tsx';
-import {MMKV} from 'react-native-mmkv';
 
 function App() {
   return (

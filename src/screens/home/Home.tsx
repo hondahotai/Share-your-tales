@@ -1,24 +1,17 @@
-import {
-  Button,
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {ImageBackground, Text, TouchableOpacity, View} from 'react-native';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../types/types.ts';
+import {RootStackParamList} from '../../types.ts';
+import {styles} from './styles.ts';
 
 type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-export const HomeScreen = () => {
+const Home = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require(`../assets/images/splashScreen.png`)}
+        source={require(`../../assets/images/splashScreen.png`)}
         style={styles.background}>
         <TouchableOpacity
           onPress={() => {
@@ -44,33 +37,4 @@ export const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  login: {
-    color: `#FFF`,
-  },
-  login__text: {
-    color: `rgba(184, 222, 100, 1)`,
-  },
-  registration: {
-    borderRadius: 21,
-    backgroundColor: `#303030`,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    marginBottom: 45,
-    marginTop: 20,
-    width: 343,
-  },
-  registration__text: {
-    color: `#B8DE64`,
-    textAlign: 'center',
-  },
-});
+export default Home;

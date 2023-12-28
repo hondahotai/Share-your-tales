@@ -1,19 +1,12 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import React, {useContext} from 'react';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {storage} from '../../utils/storage.ts';
+import {useNavigation} from '@react-navigation/native';
+import {storage} from '../../libs/storage.ts';
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
-import {PostModel, RootStackParamList} from '../../types/types.ts';
+import {MenuProps, HomeScreenNavigationProp} from './types.ts';
+import {styles} from './styles.ts';
 
-interface MenuProps {
-  userName: string;
-  userLastName: string;
-  userAvatar: string;
-}
-
-type HomeScreenNavigationProp = NavigationProp<RootStackParamList, 'Profile'>;
-
-export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
+const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const {isDark, toggleTheme} = useContext(ThemeContext);
@@ -87,43 +80,4 @@ export const ToggleMenu = ({userName, userLastName, userAvatar}: MenuProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 32,
-    paddingTop: 80,
-    paddingBottom: 40,
-  },
-  userData: {
-    color: '#131313',
-    fontSize: 20,
-    fontStyle: 'normal',
-    fontWeight: '600',
-    paddingBottom: 60,
-  },
-  buttons: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingBottom: 32,
-  },
-  buttons__text: {
-    color: '#131313',
-    fontSize: 18,
-    fontStyle: 'normal',
-    fontWeight: '400',
-  },
-  theme: {
-    gap: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    position: 'absolute',
-    bottom: 40,
-    left: 32,
-  },
-  image: {
-    width: 80,
-    height: 80,
-    borderRadius: 100,
-  },
-});
+export default ToggleMenu;

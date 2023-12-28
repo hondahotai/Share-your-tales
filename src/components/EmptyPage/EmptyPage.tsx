@@ -2,8 +2,9 @@ import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigationState} from '@react-navigation/native';
 import {useContext, useEffect, useState} from 'react';
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
+import {styles} from './styles.ts';
 
-export const EmptyPage = () => {
+const EmptyPage = () => {
   const currentRoute = useNavigationState(
     state => state.routes[state.index]?.name,
   );
@@ -36,20 +37,4 @@ export const EmptyPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    marginTop: 152,
-    marginBottom: 24,
-  },
-  text: {
-    fontSize: 16,
-    fontStyle: 'normal',
-    fontWeight: '400',
-    color: '#131313',
-  },
-});
+export default EmptyPage;

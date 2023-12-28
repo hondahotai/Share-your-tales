@@ -1,11 +1,10 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../types/types.ts';
+import {useNavigation} from '@react-navigation/native';
+import {HomeScreenNavigationProp} from './types.ts';
+import {styles} from './styles.ts';
 
-type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
-
-export const Success = () => {
+const Success = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   return (
     <View style={styles.container__success}>
@@ -29,37 +28,4 @@ export const Success = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container__success: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexGrow: 1,
-    paddingHorizontal: 16,
-    backgroundColor: `#FFF`,
-  },
-  text__success: {
-    alignItems: 'center',
-    position: 'relative',
-    marginTop: 26,
-    marginBottom: 52,
-  },
-  image__success: {
-    position: 'absolute',
-    left: -25,
-    width: 18,
-    height: 18,
-  },
-  continue: {
-    borderRadius: 21,
-    backgroundColor: `rgba(135, 183, 31, 1)`,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    marginBottom: 45,
-    marginTop: 20,
-    width: 343,
-  },
-  continue__text: {
-    color: `#FFF`,
-    textAlign: 'center',
-  },
-});
+export default Success;
