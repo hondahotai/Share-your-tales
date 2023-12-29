@@ -1,8 +1,14 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useContext} from 'react';
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
-import {IAvatar} from './types.ts';
 import {styles} from './styles.ts';
+
+type IAvatar = {
+  handleCameraLaunch: () => void;
+  handleLibraryLaunch: () => void;
+  handleDeletePhoto: () => void;
+  setChangePhoto: React.Dispatch<boolean>;
+};
 
 const AvatarPicker = ({
   handleCameraLaunch,

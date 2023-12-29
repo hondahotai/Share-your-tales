@@ -25,10 +25,18 @@ import {
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
 import {PostModel, RootStackParamList} from '../../types.ts';
 import {styles} from './styles.ts';
+import {
+  BOOKMARK_INACTIVE,
+  MAIN_ACTIVE,
+  POST_INACTIVE,
+  STATE_EMPTY_USER_SMALL,
+} from '../../assets/images';
+import {useSidebar} from '../../hooks/toggleSideBar.ts';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
 type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-const Main = () => {
+const Main: React.FC = () => {
   const [isTabActive, setTabActive] = useState(true);
   const {
     refetch: refetchMain,
@@ -57,43 +65,10 @@ const Main = () => {
   );
 
   const {isDark, toggleTheme} = useContext(ThemeContext);
-
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-  const sidebarPosition = useState(new Animated.Value(-288))[0];
-  const [overlayOpacity] = useState(new Animated.Value(0));
-
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const toggleSidebar = () => {
-    if (sidebarVisible) {
-      Animated.parallel([
-        Animated.timing(sidebarPosition, {
-          toValue: -288,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: 0,
-          duration: 1,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.timing(sidebarPosition, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: Dimensions.get('window').width - 288,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-    setSidebarVisible(!sidebarVisible);
-  };
+  const {sidebarVisible, sidebarPosition, overlayOpacity, toggleSidebar} =
+    useSidebar();
 
   const [selectedPost, setSelectedPost] = useState<PostModel>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -104,13 +79,13 @@ const Main = () => {
   };
 
   const handleNavigationMainScreen = () => {
-    navigation.navigate('Main');
+    navigation.navigate(ScreenNames.MAIN);
   };
   const handleNavigationFavoritesScreen = () => {
-    navigation.navigate('Favorites');
+    navigation.navigate(ScreenNames.FAVORITES);
   };
   const handleNavigationMyPostsScreen = () => {
-    navigation.navigate('MyPosts');
+    navigation.navigate(ScreenNames.MY_POSTS);
   };
 
   return (
@@ -133,7 +108,7 @@ const Main = () => {
             source={
               dataUser?.userMe.avatarUrl
                 ? {uri: dataUser.userMe.avatarUrl}
-                : require('../../assets/images/StateEmptyUserSmall.png')
+                : STATE_EMPTY_USER_SMALL
             }></Image>
         </TouchableOpacity>
       </View>
@@ -160,7 +135,7 @@ const Main = () => {
         </TouchableOpacity>
       </View>
       <ScrollView>
-        {data?.posts?.data.map((post: any, id: number) => (
+        {data?.posts?.data.map((post: PostModel, id: number) => (
           <PostItem
             key={id}
             post={post}
@@ -173,9 +148,7 @@ const Main = () => {
         <TouchableOpacity
           style={styles.navigation__inner}
           onPress={handleNavigationMainScreen}>
-          <Image
-            style={styles.navigation__img}
-            source={require('../../assets/images/MainActive.png')}></Image>
+          <Image style={styles.navigation__img} source={MAIN_ACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -187,7 +160,7 @@ const Main = () => {
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../../assets/images/bookmarkInActive.png')}></Image>
+            source={BOOKMARK_INACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -197,9 +170,7 @@ const Main = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
-          <Image
-            style={styles.navigation__img}
-            source={require('../../assets/images/PostInactive.png')}></Image>
+          <Image style={styles.navigation__img} source={POST_INACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,

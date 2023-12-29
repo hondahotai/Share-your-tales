@@ -25,10 +25,18 @@ import {
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
 import {PostModel, RootStackParamList} from '../../types.ts';
 import {styles} from './styles.ts';
+import {
+  BOOKMARK_ACTIVE,
+  MAIN_INACTIVE,
+  POST_INACTIVE,
+  STATE_EMPTY_USER_SMALL,
+} from '../../assets/images';
+import {useSidebar} from '../../hooks/toggleSideBar.ts';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
 type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-const Favorites = () => {
+const Favorites: React.FC = () => {
   const {
     loading: loadingUser,
     error: errorUser,
@@ -61,40 +69,8 @@ const Favorites = () => {
     }, []),
   );
 
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-  const sidebarPosition = useState(new Animated.Value(-288))[0];
-  const [overlayOpacity] = useState(new Animated.Value(0));
-
-  const toggleSidebar = () => {
-    if (sidebarVisible) {
-      Animated.parallel([
-        Animated.timing(sidebarPosition, {
-          toValue: -288,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: 0,
-          duration: 1,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.timing(sidebarPosition, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: Dimensions.get('window').width - 288,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-    setSidebarVisible(!sidebarVisible);
-  };
+  const {sidebarVisible, sidebarPosition, overlayOpacity, toggleSidebar} =
+    useSidebar();
 
   const [selectedPost, setSelectedPost] = useState<PostModel>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -105,13 +81,13 @@ const Favorites = () => {
   };
 
   const handleNavigationMainScreen = () => {
-    navigation.navigate('Main');
+    navigation.navigate(ScreenNames.MAIN);
   };
   const handleNavigationFavoritesScreen = () => {
-    navigation.navigate('Favorites');
+    navigation.navigate(ScreenNames.FAVORITES);
   };
   const handleNavigationMyPostsScreen = () => {
-    navigation.navigate('MyPosts');
+    navigation.navigate(ScreenNames.MY_POSTS);
   };
 
   return (
@@ -134,7 +110,7 @@ const Favorites = () => {
             source={
               dataUser?.userMe.avatarUrl
                 ? {uri: dataUser.userMe.avatarUrl}
-                : require('../../assets/images/StateEmptyUserSmall.png')
+                : STATE_EMPTY_USER_SMALL
             }></Image>
         </TouchableOpacity>
       </View>
@@ -156,9 +132,7 @@ const Favorites = () => {
         <TouchableOpacity
           style={styles.navigation__inner}
           onPress={handleNavigationMainScreen}>
-          <Image
-            style={styles.navigation__img}
-            source={require('../../assets/images/MainInactive.png')}></Image>
+          <Image style={styles.navigation__img} source={MAIN_INACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -170,7 +144,7 @@ const Favorites = () => {
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../../assets/images/bookmarkActive.png')}></Image>
+            source={BOOKMARK_ACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -180,9 +154,7 @@ const Favorites = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
-          <Image
-            style={styles.navigation__img}
-            source={require('../../assets/images/PostInactive.png')}></Image>
+          <Image style={styles.navigation__img} source={POST_INACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,

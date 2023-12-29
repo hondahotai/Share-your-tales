@@ -10,8 +10,10 @@ import {styles} from './styles.ts';
 import {FormDataLogin} from './types.ts';
 import {SignInRequest} from './types.ts';
 import {ScreenNavigationProp} from './types.ts';
+import {HERO_ICONS_MINI_EYE} from '../../assets/images';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
-const Login = () => {
+const Login: React.FC = () => {
   const navigation = useNavigation<ScreenNavigationProp>();
 
   const {
@@ -52,7 +54,7 @@ const Login = () => {
       if (response.data.userSignIn.token) {
         storage.set('userToken', response.data.userSignIn.token);
         console.log(storage.getString('userToken'));
-        navigation.navigate('Main');
+        navigation.navigate(ScreenNames.MAIN);
         reset();
       } else if (response.data.userSignIn.problem) {
         console.log(response.data.userSignIn.problem.message);
@@ -120,9 +122,7 @@ const Login = () => {
               />
               <TouchableOpacity
                 onPress={() => setShowPassword(!isShowPassword)}>
-                <Image
-                  source={require('../../assets/images/heroicons-mini-eye.png')}
-                  style={styles.icon}></Image>
+                <Image source={HERO_ICONS_MINI_EYE} style={styles.icon}></Image>
               </TouchableOpacity>
             </View>
           )}
@@ -134,7 +134,7 @@ const Login = () => {
         <View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Registration');
+              navigation.navigate(ScreenNames.REGISTRATION);
             }}>
             <Text style={{...styles.login, color: isDark ? `#FFF` : `#131313`}}>
               No account?

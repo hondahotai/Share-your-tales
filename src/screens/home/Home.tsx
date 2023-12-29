@@ -2,20 +2,21 @@ import {ImageBackground, Text, TouchableOpacity, View} from 'react-native';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../types.ts';
 import {styles} from './styles.ts';
+import {SPLASH_SCREEN} from '../../assets/images';
+import React from 'react';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
 type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-const Home = () => {
+const Home: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require(`../../assets/images/splashScreen.png`)}
-        style={styles.background}>
+      <ImageBackground source={SPLASH_SCREEN} style={styles.background}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('Login');
+            navigation.navigate(ScreenNames.LOGIN);
           }}>
           <Text style={styles.login}>
             Already have an account?
@@ -26,7 +27,7 @@ const Home = () => {
         <TouchableOpacity style={styles.registration}>
           <Text
             onPress={() => {
-              navigation.navigate('Registration');
+              navigation.navigate(ScreenNames.REGISTRATION);
             }}
             style={styles.registration__text}>
             Create an account

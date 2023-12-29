@@ -2,7 +2,12 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import React, {useContext} from 'react';
 import {styles} from './styles.ts';
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
-import {IPostPhotoPicker} from './types.ts';
+
+type IPostPhotoPicker = {
+  handleCameraLaunch: () => void;
+  handleLibraryLaunch: () => void;
+  setUpload: React.Dispatch<boolean>;
+};
 
 const PostPhotoPicker = ({
   handleCameraLaunch,

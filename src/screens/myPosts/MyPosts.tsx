@@ -26,10 +26,20 @@ import {
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
 import {PostModel, RootStackParamList} from '../../types.ts';
 import {style} from './styles.ts';
+import {
+  BOOKMARK_INACTIVE,
+  CREATE_BUTTON_PLUS_BLACK,
+  CREATE_BUTTON_PLUS_WHITE,
+  MAIN_INACTIVE,
+  POST_ACTIVE,
+  STATE_EMPTY_USER_SMALL,
+} from '../../assets/images';
+import {useSidebar} from '../../hooks/toggleSideBar.ts';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
 type HomeScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-const MyPosts = () => {
+const MyPosts: React.FC = () => {
   const {
     loading: loadingUser,
     error: errorUser,
@@ -70,40 +80,8 @@ const MyPosts = () => {
     }, []),
   );
 
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-  const sidebarPosition = useState(new Animated.Value(-288))[0];
-  const [overlayOpacity] = useState(new Animated.Value(0));
-
-  const toggleSidebar = () => {
-    if (sidebarVisible) {
-      Animated.parallel([
-        Animated.timing(sidebarPosition, {
-          toValue: -288,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: 0,
-          duration: 1,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.timing(sidebarPosition, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: Dimensions.get('window').width - 288,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-    setSidebarVisible(!sidebarVisible);
-  };
+  const {sidebarVisible, sidebarPosition, overlayOpacity, toggleSidebar} =
+    useSidebar();
 
   const handleNavigationCreatePostScreen = () => {
     navigation.navigate('CreatePost');
@@ -118,13 +96,13 @@ const MyPosts = () => {
   };
 
   const handleNavigationMainScreen = () => {
-    navigation.navigate('Main');
+    navigation.navigate(ScreenNames.MAIN);
   };
   const handleNavigationFavoritesScreen = () => {
-    navigation.navigate('Favorites');
+    navigation.navigate(ScreenNames.FAVORITES);
   };
   const handleNavigationMyPostsScreen = () => {
-    navigation.navigate('MyPosts');
+    navigation.navigate(ScreenNames.MY_POSTS);
   };
 
   return (
@@ -147,7 +125,7 @@ const MyPosts = () => {
             source={
               dataUser?.userMe.avatarUrl
                 ? {uri: dataUser.userMe.avatarUrl}
-                : require('../../assets/images/StateEmptyUserSmall.png')
+                : STATE_EMPTY_USER_SMALL
             }></Image>
         </TouchableOpacity>
       </View>
@@ -171,9 +149,7 @@ const MyPosts = () => {
         <TouchableOpacity
           style={styles.navigation__inner}
           onPress={handleNavigationMainScreen}>
-          <Image
-            style={styles.navigation__img}
-            source={require('../../assets/images/MainInactive.png')}></Image>
+          <Image style={styles.navigation__img} source={MAIN_INACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -185,7 +161,7 @@ const MyPosts = () => {
         <TouchableOpacity onPress={handleNavigationFavoritesScreen}>
           <Image
             style={styles.navigation__img}
-            source={require('../../assets/images/bookmarkInActive.png')}></Image>
+            source={BOOKMARK_INACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -195,9 +171,7 @@ const MyPosts = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
-          <Image
-            style={styles.navigation__img}
-            source={require('../../assets/images/PostActive.png')}></Image>
+          <Image style={styles.navigation__img} source={POST_ACTIVE}></Image>
           <Text
             style={{
               ...styles.navigation__text,
@@ -211,9 +185,7 @@ const MyPosts = () => {
           onPress={handleNavigationCreatePostScreen}>
           <Image
             source={
-              isDark
-                ? require('../../assets/images/CreateButtonPlusBlack.png')
-                : require('../../assets/images/CreateButtonPlusWhite.png')
+              isDark ? CREATE_BUTTON_PLUS_BLACK : CREATE_BUTTON_PLUS_WHITE
             }></Image>
         </TouchableOpacity>
       </View>

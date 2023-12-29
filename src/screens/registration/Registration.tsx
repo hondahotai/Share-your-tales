@@ -10,8 +10,10 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {styles} from './styles.ts';
 import {FormData} from './types.ts';
 import {HomeScreenNavigationProp} from './types.ts';
+import {HERO_ICONS_MINI_EYE} from '../../assets/images';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
-const Registration = () => {
+const Registration: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const {
     control,
@@ -133,7 +135,7 @@ const Registration = () => {
                   <TouchableOpacity
                     onPress={() => setShowPassword(!isShowPassword)}>
                     <Image
-                      source={require('../../assets/images/heroicons-mini-eye.png')}
+                      source={HERO_ICONS_MINI_EYE}
                       style={styles.icon}></Image>
                   </TouchableOpacity>
                 </View>
@@ -166,7 +168,7 @@ const Registration = () => {
                   <TouchableOpacity
                     onPress={() => setShowPassword(!isShowPassword)}>
                     <Image
-                      source={require('../../assets/images/heroicons-mini-eye.png')}
+                      source={HERO_ICONS_MINI_EYE}
                       style={styles.icon}></Image>
                   </TouchableOpacity>
                 </View>
@@ -180,7 +182,7 @@ const Registration = () => {
             <View style={styles.bottomContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('Login');
+                  navigation.navigate(ScreenNames.LOGIN);
                 }}>
                 <Text
                   style={{...styles.login, color: isDark ? `#FFF` : `#131313`}}>

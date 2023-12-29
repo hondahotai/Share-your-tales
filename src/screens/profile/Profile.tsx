@@ -9,7 +9,7 @@ import {
 import {useMutation, useQuery} from '@apollo/client';
 import {PROFILE_EDIT} from '../../api/mutations/profileMutations.ts';
 import {Controller, useForm} from 'react-hook-form';
-import {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {birthValidation} from '../../services/birthValidation.ts';
 import {emailValidation} from '../../services/emailValidation.ts';
 import {USER_ME} from '../../api/queries/userQueries.ts';
@@ -24,8 +24,16 @@ import uploadFileToS3 from './hooks/uploadFileToS3.ts';
 import getSignedUrl from './hooks/getSignedUrl.ts';
 import {useDeletePhoto} from './hooks/handleDeletePhoto.ts';
 import AvatarPicker from '../../components/AvatarPicker';
+import {
+  ARROW_LEFT_BUTTON_BACK,
+  BUTTON_BLACK_ARROW_SECOND,
+  BUTTON_PHOTO,
+  BUTTON_PHOTO_BLACK,
+  STATE_EMPTY_USER_BIG,
+} from '../../assets/images';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
-const Profile = () => {
+const Profile: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
@@ -80,7 +88,7 @@ const Profile = () => {
   }
 
   const handleNavigationMainScreen = () => {
-    navigation.navigate('Main');
+    navigation.navigate(ScreenNames.MAIN);
   };
 
   const onSubmit = async (data: FormData) => {
@@ -101,7 +109,7 @@ const Profile = () => {
         },
       });
       setIsSubmittedSuccessfully(true);
-      navigation.navigate('Main');
+      navigation.navigate(ScreenNames.MAIN);
     } catch (e: any) {
       console.log(e.message);
       setIsSubmittedSuccessfully(false);
@@ -120,9 +128,13 @@ const Profile = () => {
       const response = await launchImageLibrary(options);
       if (response.didCancel) {
         console.log('User cancelled image picker');
-      } else if (response.errorCode) {
+      }
+
+      if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
+      }
+
+      if (response.assets && response.assets.length > 0) {
         const fileUri = response.assets[0].uri;
         const fileName = response.assets[0].fileName;
         const fileCategory = 'AVATARS';
@@ -148,9 +160,11 @@ const Profile = () => {
       const response = await launchCamera(options);
       if (response.didCancel) {
         console.log('User cancelled camera picker');
-      } else if (response.errorCode) {
+      }
+      if (response.errorCode) {
         console.log('Camera Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
+      }
+      if (response.assets && response.assets.length > 0) {
         const fileUri = response.assets[0].uri;
         const fileName = response.assets[0].fileName;
         const fileCategory = 'AVATARS';
@@ -181,9 +195,7 @@ const Profile = () => {
         <TouchableOpacity onPress={handleNavigationMainScreen}>
           <Image
             source={
-              isDark
-                ? require('../../assets/images/buttonBlackArrowSecond.png')
-                : require('../../assets/images/ArrowLeftButtonBack.png')
+              isDark ? BUTTON_BLACK_ARROW_SECOND : ARROW_LEFT_BUTTON_BACK
             }></Image>
         </TouchableOpacity>
         <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
@@ -202,19 +214,11 @@ const Profile = () => {
               setChangePhoto(true);
             }}>
             <Image
-              source={
-                selectImage
-                  ? {uri: selectImage}
-                  : require('../../assets/images/StateEmptyUserBig.png')
-              }
+              source={selectImage ? {uri: selectImage} : STATE_EMPTY_USER_BIG}
               style={styles.photo__image}></Image>
             <Image
               style={styles.photo__icon}
-              source={
-                isDark
-                  ? require('../../assets/images/DMButtonPhotoBlack.png')
-                  : require('../../assets/images/DMButtonPhoto.png')
-              }></Image>
+              source={isDark ? BUTTON_PHOTO_BLACK : BUTTON_PHOTO}></Image>
           </TouchableOpacity>
         </View>
         <View>

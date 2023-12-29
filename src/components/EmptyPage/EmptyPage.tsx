@@ -1,10 +1,12 @@
 import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigationState} from '@react-navigation/native';
-import {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
 import {styles} from './styles.ts';
+import {UPS_FRAME, UPS_FRAME_BLACK} from '../../assets/images';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
-const EmptyPage = () => {
+const EmptyPage: React.FC = () => {
   const currentRoute = useNavigationState(
     state => state.routes[state.index]?.name,
   );
@@ -14,7 +16,7 @@ const EmptyPage = () => {
   const [text, setText] = useState('');
 
   useEffect(() => {
-    if (currentRoute === 'Favorites') {
+    if (currentRoute === ScreenNames.FAVORITES) {
       setText("You haven't added anything to your favorites yet");
     } else {
       setText("You haven't posted any posts yet");
@@ -25,11 +27,7 @@ const EmptyPage = () => {
     <View style={styles.container}>
       <Image
         style={styles.image}
-        source={
-          isDark
-            ? require('../../assets/images/upsFrameBlack.png')
-            : require('../../assets/images/upsFrame.png')
-        }></Image>
+        source={isDark ? UPS_FRAME_BLACK : UPS_FRAME}></Image>
       <Text style={{...styles.text, color: isDark ? `#696969` : `#131313`}}>
         {text}
       </Text>

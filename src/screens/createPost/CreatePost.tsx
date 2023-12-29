@@ -20,14 +20,21 @@ import getSignedUrl from './hooks/getSignedUrl.ts';
 import uploadFileToS3 from './hooks/uploadFileToS3.ts';
 import getCleanUrl from './hooks/getCleanUrl.ts';
 import PostPhotoPicker from '../../components/PostPhotoPicker';
+import {
+  ARROW_LEFT_BUTTON_BACK,
+  BUTTON_BLACK_ARROW_SECOND,
+  BUTTON_CROSS_WHITE,
+  SOLID_CLOUD_ARROW_UP_WHITE,
+} from '../../assets/images';
+import {ScreenNames} from '../../navigation/ScreenNames.ts';
 
-const CreatePost = () => {
+const CreatePost: React.FC = () => {
   const [PostCreate, {loading, error, data}] = useMutation(POST_CREATE);
   const {isDark, toggleTheme} = useContext(ThemeContext);
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const handleNavigationMyPostsScreen = () => {
-    navigation.navigate('MyPosts');
+    navigation.navigate(ScreenNames.MY_POSTS);
   };
 
   const {
@@ -78,9 +85,11 @@ const CreatePost = () => {
       const response = await launchImageLibrary(options);
       if (response.didCancel) {
         console.log('User cancelled image picker');
-      } else if (response.errorCode) {
+      }
+      if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
+      }
+      if (response.assets && response.assets.length > 0) {
         const fileUri = response.assets[0].uri;
         const fileName = response.assets[0].fileName;
         const fileCategory = 'POSTS';
@@ -106,9 +115,11 @@ const CreatePost = () => {
       const response = await launchCamera(options);
       if (response.didCancel) {
         console.log('User cancelled camera picker');
-      } else if (response.errorCode) {
+      }
+      if (response.errorCode) {
         console.log('Camera Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
+      }
+      if (response.assets && response.assets.length > 0) {
         const fileUri = response.assets[0].uri;
         const fileName = response.assets[0].fileName;
         const fileCategory = 'POSTS';
@@ -140,17 +151,14 @@ const CreatePost = () => {
         <TouchableOpacity onPress={handleNavigationMyPostsScreen}>
           <Image
             source={
-              isDark
-                ? require('../../assets/images/buttonBlackArrowSecond.png')
-                : require('../../assets/images/ArrowLeftButtonBack.png')
+              isDark ? BUTTON_BLACK_ARROW_SECOND : ARROW_LEFT_BUTTON_BACK
             }></Image>
         </TouchableOpacity>
         <Text style={{...styles.title, color: isDark ? `#FFF` : `#131313`}}>
           Create post
         </Text>
         <TouchableOpacity onPress={handleReset}>
-          <Image
-            source={require('../../assets/images/ButtoncrossWhite.png')}></Image>
+          <Image source={BUTTON_CROSS_WHITE}></Image>
         </TouchableOpacity>
       </View>
       <ScrollView>
@@ -164,7 +172,7 @@ const CreatePost = () => {
           ) : (
             <Image
               style={styles.upload}
-              source={require('../../assets/images/heroicons-solid-cloud-arrow-upW.png')}></Image>
+              source={SOLID_CLOUD_ARROW_UP_WHITE}></Image>
           )}
 
           {!selectImage && (
