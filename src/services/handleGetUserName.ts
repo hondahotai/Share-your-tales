@@ -1,5 +1,5 @@
-import {storage} from '../../../libs/storage.ts';
-import {PostModel} from '../../../types.ts';
+import {storage} from '../libs/storage.ts';
+import {PostModel} from '../types.ts';
 
 export const usePostAuthor = (post: PostModel) => {
   return () => {

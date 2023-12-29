@@ -14,8 +14,8 @@ import {LIKE} from '../../api/mutations/likeMutation.ts';
 import {UNLIKE} from '../../api/mutations/unlikeMutation.ts';
 import {ThemeContext} from '../../providers/ThemeContext.tsx';
 import {styles} from './styles.ts';
-import {usePostAuthor} from './hooks/handleGetUserName.ts';
-import {usePostDate} from './hooks/handleGetDate.ts';
+import {usePostAuthor} from '../../services/handleGetUserName.ts';
+import {usePostDate} from '../../services/handleGetDate.ts';
 import {PostModel} from '../../types.ts';
 import {usePanResponder} from './hooks/panResponder.ts';
 import {
